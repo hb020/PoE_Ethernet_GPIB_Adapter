@@ -11,7 +11,7 @@
 
 While there are a few open-source GPIB controller projects, most of them rely on USB, Raspberry Pi, or WiFi/Bluetooth connectivity. These solutions do not meet my requirements. Using over 10 adapters with USB would result in a serial port management nightmare and require a service running on a local computer to forward all ports over the network for access from any computer. 
 
-WiFi could resolve this but would introduce multiple devices in close proximity to sensitive test setups, which I find suboptimal. One PoE-powered GPIB project based on the RP2040 was mentioned on the EEVblog forum but was never published and seemed to have stalled. Therefore, I designed my own adapter while ensuring compatibility with the largest open-source adapter, the AR488.
+WiFi could resolve this but would introduce multiple devices in close proximity to sensitive test setups, which I find suboptimal. One PoE-powered GPIB project based on the RP2040 was mentioned on the EEVblog forum but was never published and seemed to have stalled. Therefore, I designed my own adapter while ensuring compatibility with one of the largest open-source adapter, the AR488.
 
 Based on these requirements, the design was divided into the following components:
 
@@ -49,7 +49,7 @@ The Microchip ATMEGA4809 was chosen for its affordability and familiarity. While
 ### Network Interface
 
 The Wiznet W5500 was selected as the network controller for its available drivers and compatibility with the AR488 project. To simplify the design:
-- A planar magnetics RJ-45 magjack was used.
+- A magnetics RJ-45 magjack was used.
 - Series termination was added to all applicable I/O lines for proper signal integrity and EMI reduction.
 - A Texas Instruments SN74LV1T125DCK tri-state buffer was used for level translation (5V ↔ 3.3V ↔ 5V).
 - A simple LDO provided the 3.3V supply, with a watchdog on the reset line.
@@ -76,13 +76,15 @@ USB-to-UART controllers from reputable distributors proved expensive. Instead, I
 
 ## Software
 
-The current software is a work-in-progress, streamlined fork of the AR488 project. This fork was chosen because it uses the Prologix syntax, compatible with my existing scripts. I also appreciate the project's simplicity: the Ethernet adapter operates as a basic socket. Commands without a `++` prefix are sent directly to the bus, while configuration is handled with `++` commands (e.g., `++addr` queries the address, and `++addr 22` sets the interface address to 22).
+The current software is a work-in-progress, simplifed fork of the AR488 project. This fork was chosen because it uses the Prologix syntax, compatible with my existing scripts. I also appreciate the Prolgix's simplicity: the Ethernet adapter operates as a basic socket. Commands without a `++` prefix are sent directly to the bus, while configuration is handled with `++` commands (e.g., `++addr` queries the address, and `++addr 22` sets the interface address to 22).
 
 Initially, I intended to fully integrate the network stack and console interface into the AR488 project. However, given the project's complexity and my inability to test all functionalities, I opted to streamline this fork exclusively for this adapter. In the future, I plan to move away from Arduino to enhance performance.
 
 Currently, the software includes a barebones implementation of the network stack and I2C support, with only DHCP enabled. Switching to USB-C UART instead of Ethernet requires modifying the configuration file and recompiling. Updates are planned to address these limitations.
 
-Despite its rough edges, the code has proven extremely reliable, running for months without issues. All my Prologix-based scripts work seamlessly.
+Despite its barebones hack approach, the code has proven extremely reliable, running for months without issues. All my Prologix-based scripts work seamlessly.
+
+Many updates on the SW is expected in the future. 
 
 Contributions to the software are highly welcome!
 
@@ -90,9 +92,9 @@ Contributions to the software are highly welcome!
 
 ## Mechanics
 
-A simple split housing was designed in FreeCAD for 3D printing. The snap-action case simplifies assembly and includes optional holes for securing the PCB to the bottom half. These holes were added as a precaution in case EMI reduction required metallization or conductive 3D printing. Although these measures were unnecessary, securing the PCB prevents rattling and ensures a snug fit.
+A simple split housing was designed in FreeCAD for 3D printing. The snap-action case simplifies assembly and includes optional holes for securing the PCB to the bottom half. These holes were added as a precaution in case EMI reduction required metallization or conductive 3D printing. Although these measures were unnecessary, securing the PCB prevents rattling and ensures a snug fit. There is also two holes on the back of the case for optional M3.5 screws to secure the adapter to the instrument.
 
-The case design heavily depends on the 3D printer and filament. I printed the cases on a Prusa MK3.5 using Bambu Labs PLA-CF filament, which provides a superb finish.
+The case design fitment heavily depends on the 3D printer and filament. I printed the cases on a Prusa MK3.5 using Bambu Labs PLA-CF filament, which provides a superb finish.
 
 ---
 
