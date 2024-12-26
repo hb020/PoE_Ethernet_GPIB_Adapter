@@ -1,33 +1,57 @@
-<h1>PoE GPIB Ethernet Adapter</h1>
+<h1>PoE Ethernet GPIB  Adapter</h1>
 
 
 <h2>PoE powered GPIB adapter with ethernet and USB-C support</h2>
 
-<p>The <strong>PoE GPIB Ethernet Adapter</strong> is designed to to interface test equiptment with and GPIB / HPIB / IEEE-488 interface</p>
 
-<p>The primary goal of this project is to have an easy solution to connect multiple GPIB equipted instruments over ethernet.</p>
+![Adapter_assebled](Img/adapter_connected.png)
+
+
+<p>The <strong>PoE Ethernet GPIB Adapter</strong> is designed to interface test equiptment with and GPIB / HPIB / IEEE-488 interface</p>
+
+<p>The primary goal of this project is to have an easy solution to connect multiple GPIB equipted instruments over ethernet without excess cabling.</p>
 <p></p>
 
 <hr />
 
 <h2>Why?</h2>
 
-<p>The motivation behind <strong>PoE GPIB Ethernet Adapter</strong> includes:</p>
+<p>The motivation behind this project comes from one of the drawbacks of several generations of instruments using GPIB. In theory one only need one GPIB master and up to 20+ instrument can be connected together in what ever order you like with sutible GPIB cabling. It is however a couple of drawbacks with this:</p>
 
 <ul>
-<li>Have a re</li>
-<li>[Reason 2: e.g., "Improving on existing solutions with faster or cheaper methods."]</li>
-<li>[Reason 3: e.g., "Providing a tool for specific niche applications."]</li>
+<li>It requires the instrument to be fully compliant to the IEEE-488 standard, since older instrument was made before this standard was made, a lot of them is not compliant. Main problem with this is that the bus does not go Hi-Z when off, requiring certain instruments to be turned on, even if you only want to talk to another device.</li>
+<li>GPIB cabling is bulky and expensive. Altougth good deals can be had at the used marked, the price of the cables are generally on the higher side.</li>
 </ul>
 
-<p>This project was created with [target audience or use case] in mind to [specific achievement].</p>
+<p>At work this has been solved elegantly by having a bunch of commerical availible Ethernet adapters, each is assigned an address and you just plug it in the back of the instrument. The drawback is the price of the adapter, retailing for about 500 USD. This is not hobby friendly, so my solution so far was to buy one adapter and stick with daisy-chaining. But due to the problems listed above and an instrument park that has grown to 20 devices requiring GPIB, this was not working out. And so the <strong>PoE Ethernet GPIB Adapter</strong> was born.
+</p>
 
 <hr />
 
-<h2>Related Pages</h2>
+<h2>Design criteria</h2>
 
 <ul>
-<li><a href="docs/design-and-testing.md">Design and Testing Documentation</a></li>
+<li>Low cost, it should be cheaper than one single brand name GPIB interface cable and 1/10 of the price of brand name GPIB adapters.</li>
+<li>Support Power over Ethernet to reduce required cables needed.</li>
+<li>Support to be powered over USB-C should not PoE be available.</li>
+<li>Support GPIB communication over either the ethernet interface or thru serial USB-C interface.</li>
+<li>Use the same communication protocal as other avaialbe commercial units over telnet interace.</li>
+<li>Have low radiated and conducted noise as to not interfere with the test enviroment.</li>
+<li>Have an easy to print 3d-printed enclosure to keep it simple and low cost.</li>
+</ul>
+
+
+<h2>Results</h2>
+
+<p>All the design goals of this project has been met.
+The unit price is currently 32 USD in parts ordered from Mouser, less than a dollar in filament and the pcb cost is about 4 dollars max. This gives us a total of approx 40 USD per unit. This is when ordering parts for 20 units, price naturally goes up if fewer units is purchased.
+In my home lab I assign each device a static IP address based on MAC and run a local DNS server to assign an easy to remember domain, making the use of the design a breeze. 
+
+See more of design choises and testing here:
+
+<ul>
+<li><a href="docs/dn.md">Design Documentation</a></li>
+<li><a href="docs/dt.md">Design test Documentation</a></li>
 <li><a href="docs/production-files.md">Production Files</a></li>
 </ul>
 
@@ -65,7 +89,7 @@
 
 <h2>License</h2>
 
-<p>This project is licensed under the [Your License Name]. See the LICENSE file for details.</p>
+<p>This project is licensed under the GPL V3. See the LICENSE file for details.</p>
 
 <h2>Acknowledgements</h2>
 

@@ -1,5 +1,5 @@
 (kicad_sch
-	(version 20241004)
+	(version 20241209)
 	(generator "eeschema")
 	(generator_version "8.99")
 	(uuid "bca900b9-4129-4b4e-a7a1-4f9fce6f2fa4")
@@ -237,7 +237,7 @@
 						(type default)
 					)
 					(fill
-						(type outline)
+						(type none)
 					)
 				)
 				(arc
@@ -249,7 +249,7 @@
 						(type default)
 					)
 					(fill
-						(type none)
+						(type outline)
 					)
 				)
 				(arc
@@ -285,7 +285,7 @@
 						(type default)
 					)
 					(fill
-						(type outline)
+						(type none)
 					)
 				)
 				(arc
@@ -297,7 +297,7 @@
 						(type default)
 					)
 					(fill
-						(type none)
+						(type outline)
 					)
 				)
 				(polyline
@@ -5066,7 +5066,7 @@
 	)
 	(symbol
 		(lib_id "power:GND")
-		(at 54.61 33.02 0)
+		(at 43.18 31.75 0)
 		(unit 1)
 		(exclude_from_sim no)
 		(in_bom yes)
@@ -5074,7 +5074,7 @@
 		(dnp no)
 		(uuid "2ad53c7a-bdb3-487c-be4e-3af1df5c08b5")
 		(property "Reference" "#PWR030"
-			(at 54.61 39.37 0)
+			(at 43.18 38.1 0)
 			(effects
 				(font
 					(size 1.27 1.27)
@@ -5083,7 +5083,7 @@
 			)
 		)
 		(property "Value" "GND"
-			(at 54.61 36.83 0)
+			(at 43.18 35.56 0)
 			(effects
 				(font
 					(size 1.27 1.27)
@@ -5091,7 +5091,7 @@
 			)
 		)
 		(property "Footprint" ""
-			(at 54.61 33.02 0)
+			(at 43.18 31.75 0)
 			(effects
 				(font
 					(size 1.27 1.27)
@@ -5100,7 +5100,7 @@
 			)
 		)
 		(property "Datasheet" ""
-			(at 54.61 33.02 0)
+			(at 43.18 31.75 0)
 			(effects
 				(font
 					(size 1.27 1.27)
@@ -5109,7 +5109,7 @@
 			)
 		)
 		(property "Description" "Power symbol creates a global label with name \"GND\" , ground"
-			(at 54.61 33.02 0)
+			(at 43.18 31.75 0)
 			(effects
 				(font
 					(size 1.27 1.27)
@@ -5189,6 +5189,102 @@
 			(project "AR488_Ethernet_GPIB"
 				(path "/cb342d57-db5b-4a96-a04b-a42c0b7a476f/2d77d31c-04d2-40b9-b03e-81b10fa5f609"
 					(reference "#PWR012")
+					(unit 1)
+				)
+			)
+		)
+	)
+	(symbol
+		(lib_id "Device:C")
+		(at 55.88 27.94 0)
+		(unit 1)
+		(exclude_from_sim no)
+		(in_bom yes)
+		(on_board yes)
+		(dnp no)
+		(uuid "4849e9bf-2b8b-4c8f-a512-52b34ea1875a")
+		(property "Reference" "C64"
+			(at 60.198 25.908 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(justify right)
+			)
+		)
+		(property "Value" "10µ"
+			(at 56.388 30.226 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(justify left)
+			)
+		)
+		(property "Footprint" "Capacitor_SMD:C_0402_1005Metric"
+			(at 56.8452 31.75 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(hide yes)
+			)
+		)
+		(property "Datasheet" "~"
+			(at 55.88 27.94 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(hide yes)
+			)
+		)
+		(property "Description" "Unpolarized capacitor"
+			(at 55.88 27.94 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(hide yes)
+			)
+		)
+		(property "Model" "GRM155R60J106ME05D"
+			(at 55.88 27.94 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(hide yes)
+			)
+		)
+		(property "Manufacturer" "Murata"
+			(at 55.88 27.94 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(hide yes)
+			)
+		)
+		(property "JLCPCB" "C15525"
+			(at 55.88 27.94 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(hide yes)
+			)
+		)
+		(pin "1"
+			(uuid "e8453d8e-5675-4962-8f3a-a74c3dc8cfc7")
+		)
+		(pin "2"
+			(uuid "b883d0a8-53d4-48de-af5e-a1a32eaba6a2")
+		)
+		(instances
+			(project "PoE_Ethernet_GPIB_Adapter"
+				(path "/cb342d57-db5b-4a96-a04b-a42c0b7a476f/2d77d31c-04d2-40b9-b03e-81b10fa5f609"
+					(reference "C64")
 					(unit 1)
 				)
 			)
@@ -5293,7 +5389,7 @@
 	)
 	(symbol
 		(lib_id "power:GND")
-		(at 45.72 33.02 0)
+		(at 34.29 31.75 0)
 		(unit 1)
 		(exclude_from_sim no)
 		(in_bom yes)
@@ -5301,7 +5397,7 @@
 		(dnp no)
 		(uuid "4c162418-8ab0-4da8-b515-d6ac813ac9d2")
 		(property "Reference" "#PWR028"
-			(at 45.72 39.37 0)
+			(at 34.29 38.1 0)
 			(effects
 				(font
 					(size 1.27 1.27)
@@ -5310,7 +5406,7 @@
 			)
 		)
 		(property "Value" "GND"
-			(at 45.72 36.83 0)
+			(at 34.29 35.56 0)
 			(effects
 				(font
 					(size 1.27 1.27)
@@ -5318,7 +5414,7 @@
 			)
 		)
 		(property "Footprint" ""
-			(at 45.72 33.02 0)
+			(at 34.29 31.75 0)
 			(effects
 				(font
 					(size 1.27 1.27)
@@ -5327,7 +5423,7 @@
 			)
 		)
 		(property "Datasheet" ""
-			(at 45.72 33.02 0)
+			(at 34.29 31.75 0)
 			(effects
 				(font
 					(size 1.27 1.27)
@@ -5336,7 +5432,7 @@
 			)
 		)
 		(property "Description" "Power symbol creates a global label with name \"GND\" , ground"
-			(at 45.72 33.02 0)
+			(at 34.29 31.75 0)
 			(effects
 				(font
 					(size 1.27 1.27)
@@ -5351,6 +5447,72 @@
 			(project "AR488_Ethernet_GPIB"
 				(path "/cb342d57-db5b-4a96-a04b-a42c0b7a476f/2d77d31c-04d2-40b9-b03e-81b10fa5f609"
 					(reference "#PWR028")
+					(unit 1)
+				)
+			)
+		)
+	)
+	(symbol
+		(lib_id "power:VBUS")
+		(at 55.88 24.13 0)
+		(unit 1)
+		(exclude_from_sim no)
+		(in_bom yes)
+		(on_board yes)
+		(dnp no)
+		(fields_autoplaced yes)
+		(uuid "514a623c-5c80-4d1f-8540-d79dd7064932")
+		(property "Reference" "#PWR0168"
+			(at 55.88 27.94 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(hide yes)
+			)
+		)
+		(property "Value" "VBUS"
+			(at 55.88 19.05 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+			)
+		)
+		(property "Footprint" ""
+			(at 55.88 24.13 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(hide yes)
+			)
+		)
+		(property "Datasheet" ""
+			(at 55.88 24.13 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(hide yes)
+			)
+		)
+		(property "Description" "Power symbol creates a global label with name \"VBUS\""
+			(at 55.88 24.13 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(hide yes)
+			)
+		)
+		(pin "1"
+			(uuid "e27718dc-073d-4ba5-ab71-3d3f7d2a6de3")
+		)
+		(instances
+			(project "PoE_Ethernet_GPIB_Adapter"
+				(path "/cb342d57-db5b-4a96-a04b-a42c0b7a476f/2d77d31c-04d2-40b9-b03e-81b10fa5f609"
+					(reference "#PWR0168")
 					(unit 1)
 				)
 			)
@@ -6049,7 +6211,7 @@
 	)
 	(symbol
 		(lib_id "Device:C")
-		(at 45.72 29.21 0)
+		(at 34.29 27.94 0)
 		(unit 1)
 		(exclude_from_sim no)
 		(in_bom yes)
@@ -6057,7 +6219,7 @@
 		(dnp no)
 		(uuid "83ff9df0-5277-4411-b46a-3518473361ce")
 		(property "Reference" "C7"
-			(at 48.768 27.178 0)
+			(at 37.338 25.908 0)
 			(effects
 				(font
 					(size 1.27 1.27)
@@ -6066,7 +6228,7 @@
 			)
 		)
 		(property "Value" "10µ"
-			(at 46.228 31.496 0)
+			(at 34.798 30.226 0)
 			(effects
 				(font
 					(size 1.27 1.27)
@@ -6075,7 +6237,7 @@
 			)
 		)
 		(property "Footprint" "Capacitor_SMD:C_0402_1005Metric"
-			(at 46.6852 33.02 0)
+			(at 35.2552 31.75 0)
 			(effects
 				(font
 					(size 1.27 1.27)
@@ -6084,7 +6246,7 @@
 			)
 		)
 		(property "Datasheet" "~"
-			(at 45.72 29.21 0)
+			(at 34.29 27.94 0)
 			(effects
 				(font
 					(size 1.27 1.27)
@@ -6093,7 +6255,7 @@
 			)
 		)
 		(property "Description" "Unpolarized capacitor"
-			(at 45.72 29.21 0)
+			(at 34.29 27.94 0)
 			(effects
 				(font
 					(size 1.27 1.27)
@@ -6102,7 +6264,7 @@
 			)
 		)
 		(property "Model" "GRM155R60J106ME05D"
-			(at 45.72 29.21 0)
+			(at 34.29 27.94 0)
 			(effects
 				(font
 					(size 1.27 1.27)
@@ -6111,7 +6273,7 @@
 			)
 		)
 		(property "Manufacturer" "Murata"
-			(at 45.72 29.21 0)
+			(at 34.29 27.94 0)
 			(effects
 				(font
 					(size 1.27 1.27)
@@ -6120,7 +6282,7 @@
 			)
 		)
 		(property "JLCPCB" "C15525"
-			(at 45.72 29.21 0)
+			(at 34.29 27.94 0)
 			(effects
 				(font
 					(size 1.27 1.27)
@@ -6511,7 +6673,7 @@
 	)
 	(symbol
 		(lib_id "power:VBUS")
-		(at 45.72 25.4 0)
+		(at 34.29 24.13 0)
 		(unit 1)
 		(exclude_from_sim no)
 		(in_bom yes)
@@ -6520,7 +6682,7 @@
 		(fields_autoplaced yes)
 		(uuid "91cc335d-79ef-4720-b54c-edb7f3d0425f")
 		(property "Reference" "#PWR027"
-			(at 45.72 29.21 0)
+			(at 34.29 27.94 0)
 			(effects
 				(font
 					(size 1.27 1.27)
@@ -6529,7 +6691,7 @@
 			)
 		)
 		(property "Value" "VBUS"
-			(at 45.72 20.32 0)
+			(at 34.29 19.05 0)
 			(effects
 				(font
 					(size 1.27 1.27)
@@ -6537,7 +6699,7 @@
 			)
 		)
 		(property "Footprint" ""
-			(at 45.72 25.4 0)
+			(at 34.29 24.13 0)
 			(effects
 				(font
 					(size 1.27 1.27)
@@ -6546,7 +6708,7 @@
 			)
 		)
 		(property "Datasheet" ""
-			(at 45.72 25.4 0)
+			(at 34.29 24.13 0)
 			(effects
 				(font
 					(size 1.27 1.27)
@@ -6555,7 +6717,7 @@
 			)
 		)
 		(property "Description" "Power symbol creates a global label with name \"VBUS\""
-			(at 45.72 25.4 0)
+			(at 34.29 24.13 0)
 			(effects
 				(font
 					(size 1.27 1.27)
@@ -6577,7 +6739,7 @@
 	)
 	(symbol
 		(lib_id "power:VBUS")
-		(at 54.61 25.4 0)
+		(at 43.18 24.13 0)
 		(unit 1)
 		(exclude_from_sim no)
 		(in_bom yes)
@@ -6586,7 +6748,7 @@
 		(fields_autoplaced yes)
 		(uuid "949b7020-db9a-430d-a4ce-75ff48aa34a5")
 		(property "Reference" "#PWR029"
-			(at 54.61 29.21 0)
+			(at 43.18 27.94 0)
 			(effects
 				(font
 					(size 1.27 1.27)
@@ -6595,7 +6757,7 @@
 			)
 		)
 		(property "Value" "VBUS"
-			(at 54.61 20.32 0)
+			(at 43.18 19.05 0)
 			(effects
 				(font
 					(size 1.27 1.27)
@@ -6603,7 +6765,7 @@
 			)
 		)
 		(property "Footprint" ""
-			(at 54.61 25.4 0)
+			(at 43.18 24.13 0)
 			(effects
 				(font
 					(size 1.27 1.27)
@@ -6612,7 +6774,7 @@
 			)
 		)
 		(property "Datasheet" ""
-			(at 54.61 25.4 0)
+			(at 43.18 24.13 0)
 			(effects
 				(font
 					(size 1.27 1.27)
@@ -6621,7 +6783,7 @@
 			)
 		)
 		(property "Description" "Power symbol creates a global label with name \"VBUS\""
-			(at 54.61 25.4 0)
+			(at 43.18 24.13 0)
 			(effects
 				(font
 					(size 1.27 1.27)
@@ -6732,6 +6894,71 @@
 			(project "AR488_Ethernet_GPIB"
 				(path "/cb342d57-db5b-4a96-a04b-a42c0b7a476f/2d77d31c-04d2-40b9-b03e-81b10fa5f609"
 					(reference "R16")
+					(unit 1)
+				)
+			)
+		)
+	)
+	(symbol
+		(lib_id "power:GND")
+		(at 55.88 31.75 0)
+		(unit 1)
+		(exclude_from_sim no)
+		(in_bom yes)
+		(on_board yes)
+		(dnp no)
+		(uuid "94baeb1c-8157-4d6c-81ee-44ebd0ccedf2")
+		(property "Reference" "#PWR0169"
+			(at 55.88 38.1 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(hide yes)
+			)
+		)
+		(property "Value" "GND"
+			(at 55.88 35.56 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+			)
+		)
+		(property "Footprint" ""
+			(at 55.88 31.75 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(hide yes)
+			)
+		)
+		(property "Datasheet" ""
+			(at 55.88 31.75 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(hide yes)
+			)
+		)
+		(property "Description" "Power symbol creates a global label with name \"GND\" , ground"
+			(at 55.88 31.75 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(hide yes)
+			)
+		)
+		(pin "1"
+			(uuid "03c8a9cc-fc2d-4cfa-94f7-bb95985454aa")
+		)
+		(instances
+			(project "PoE_Ethernet_GPIB_Adapter"
+				(path "/cb342d57-db5b-4a96-a04b-a42c0b7a476f/2d77d31c-04d2-40b9-b03e-81b10fa5f609"
+					(reference "#PWR0169")
 					(unit 1)
 				)
 			)
@@ -7127,6 +7354,72 @@
 		)
 	)
 	(symbol
+		(lib_id "power:VBUS")
+		(at 49.53 24.13 0)
+		(unit 1)
+		(exclude_from_sim no)
+		(in_bom yes)
+		(on_board yes)
+		(dnp no)
+		(fields_autoplaced yes)
+		(uuid "a44bbc29-5275-4c61-b8de-69dcbc5e800c")
+		(property "Reference" "#PWR0166"
+			(at 49.53 27.94 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(hide yes)
+			)
+		)
+		(property "Value" "VBUS"
+			(at 49.53 19.05 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+			)
+		)
+		(property "Footprint" ""
+			(at 49.53 24.13 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(hide yes)
+			)
+		)
+		(property "Datasheet" ""
+			(at 49.53 24.13 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(hide yes)
+			)
+		)
+		(property "Description" "Power symbol creates a global label with name \"VBUS\""
+			(at 49.53 24.13 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(hide yes)
+			)
+		)
+		(pin "1"
+			(uuid "c689b495-9460-43a1-bab2-0eb742364df5")
+		)
+		(instances
+			(project "PoE_Ethernet_GPIB_Adapter"
+				(path "/cb342d57-db5b-4a96-a04b-a42c0b7a476f/2d77d31c-04d2-40b9-b03e-81b10fa5f609"
+					(reference "#PWR0166")
+					(unit 1)
+				)
+			)
+		)
+	)
+	(symbol
 		(lib_id "power:GND")
 		(at 21.59 102.87 0)
 		(unit 1)
@@ -7483,7 +7776,7 @@
 	)
 	(symbol
 		(lib_id "Device:C")
-		(at 54.61 29.21 0)
+		(at 43.18 27.94 0)
 		(unit 1)
 		(exclude_from_sim no)
 		(in_bom yes)
@@ -7491,7 +7784,7 @@
 		(dnp no)
 		(uuid "b3737ca9-d129-4af5-914f-dc8b99cd3f2c")
 		(property "Reference" "C8"
-			(at 57.658 27.178 0)
+			(at 46.228 25.908 0)
 			(effects
 				(font
 					(size 1.27 1.27)
@@ -7500,7 +7793,7 @@
 			)
 		)
 		(property "Value" "10µ"
-			(at 55.118 31.496 0)
+			(at 43.688 30.226 0)
 			(effects
 				(font
 					(size 1.27 1.27)
@@ -7509,7 +7802,7 @@
 			)
 		)
 		(property "Footprint" "Capacitor_SMD:C_0402_1005Metric"
-			(at 55.5752 33.02 0)
+			(at 44.1452 31.75 0)
 			(effects
 				(font
 					(size 1.27 1.27)
@@ -7518,7 +7811,7 @@
 			)
 		)
 		(property "Datasheet" "~"
-			(at 54.61 29.21 0)
+			(at 43.18 27.94 0)
 			(effects
 				(font
 					(size 1.27 1.27)
@@ -7527,7 +7820,7 @@
 			)
 		)
 		(property "Description" "Unpolarized capacitor"
-			(at 54.61 29.21 0)
+			(at 43.18 27.94 0)
 			(effects
 				(font
 					(size 1.27 1.27)
@@ -7536,7 +7829,7 @@
 			)
 		)
 		(property "Model" "GRM155R60J106ME05D"
-			(at 54.61 29.21 0)
+			(at 43.18 27.94 0)
 			(effects
 				(font
 					(size 1.27 1.27)
@@ -7545,7 +7838,7 @@
 			)
 		)
 		(property "Manufacturer" "Murata"
-			(at 54.61 29.21 0)
+			(at 43.18 27.94 0)
 			(effects
 				(font
 					(size 1.27 1.27)
@@ -7554,7 +7847,7 @@
 			)
 		)
 		(property "JLCPCB" "C15525"
-			(at 54.61 29.21 0)
+			(at 43.18 27.94 0)
 			(effects
 				(font
 					(size 1.27 1.27)
@@ -8251,6 +8544,167 @@
 			(project "AR488_Ethernet_GPIB"
 				(path "/cb342d57-db5b-4a96-a04b-a42c0b7a476f/2d77d31c-04d2-40b9-b03e-81b10fa5f609"
 					(reference "#PWR013")
+					(unit 1)
+				)
+			)
+		)
+	)
+	(symbol
+		(lib_id "Device:C")
+		(at 49.53 27.94 0)
+		(unit 1)
+		(exclude_from_sim no)
+		(in_bom yes)
+		(on_board yes)
+		(dnp no)
+		(uuid "e8dc685b-42f3-485c-96ba-062fc7386e6f")
+		(property "Reference" "C63"
+			(at 53.848 25.908 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(justify right)
+			)
+		)
+		(property "Value" "10µ"
+			(at 50.038 30.226 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(justify left)
+			)
+		)
+		(property "Footprint" "Capacitor_SMD:C_0402_1005Metric"
+			(at 50.4952 31.75 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(hide yes)
+			)
+		)
+		(property "Datasheet" "~"
+			(at 49.53 27.94 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(hide yes)
+			)
+		)
+		(property "Description" "Unpolarized capacitor"
+			(at 49.53 27.94 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(hide yes)
+			)
+		)
+		(property "Model" "GRM155R60J106ME05D"
+			(at 49.53 27.94 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(hide yes)
+			)
+		)
+		(property "Manufacturer" "Murata"
+			(at 49.53 27.94 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(hide yes)
+			)
+		)
+		(property "JLCPCB" "C15525"
+			(at 49.53 27.94 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(hide yes)
+			)
+		)
+		(pin "1"
+			(uuid "aa00baf0-1ddc-4991-8436-69b7e33710b2")
+		)
+		(pin "2"
+			(uuid "e26baf1f-44d6-450c-916a-d3134fed6b30")
+		)
+		(instances
+			(project "PoE_Ethernet_GPIB_Adapter"
+				(path "/cb342d57-db5b-4a96-a04b-a42c0b7a476f/2d77d31c-04d2-40b9-b03e-81b10fa5f609"
+					(reference "C63")
+					(unit 1)
+				)
+			)
+		)
+	)
+	(symbol
+		(lib_id "power:GND")
+		(at 49.53 31.75 0)
+		(unit 1)
+		(exclude_from_sim no)
+		(in_bom yes)
+		(on_board yes)
+		(dnp no)
+		(uuid "eb2b6993-9c2c-4828-8d08-17ecaec7ceee")
+		(property "Reference" "#PWR0167"
+			(at 49.53 38.1 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(hide yes)
+			)
+		)
+		(property "Value" "GND"
+			(at 49.53 35.56 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+			)
+		)
+		(property "Footprint" ""
+			(at 49.53 31.75 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(hide yes)
+			)
+		)
+		(property "Datasheet" ""
+			(at 49.53 31.75 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(hide yes)
+			)
+		)
+		(property "Description" "Power symbol creates a global label with name \"GND\" , ground"
+			(at 49.53 31.75 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(hide yes)
+			)
+		)
+		(pin "1"
+			(uuid "94fdb80f-1f3b-48ff-a81e-0ab74aceccdc")
+		)
+		(instances
+			(project "PoE_Ethernet_GPIB_Adapter"
+				(path "/cb342d57-db5b-4a96-a04b-a42c0b7a476f/2d77d31c-04d2-40b9-b03e-81b10fa5f609"
+					(reference "#PWR0167")
 					(unit 1)
 				)
 			)

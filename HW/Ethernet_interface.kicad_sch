@@ -1,5 +1,5 @@
 (kicad_sch
-	(version 20241004)
+	(version 20241209)
 	(generator "eeschema")
 	(generator_version "8.99")
 	(uuid "e7c0ac04-41d8-45ea-a893-c04a7d019a1a")
@@ -214,6 +214,17 @@
 						(type outline)
 					)
 				)
+				(circle
+					(center -2.54 -12.7)
+					(radius 0.254)
+					(stroke
+						(width 0.254)
+						(type default)
+					)
+					(fill
+						(type outline)
+					)
+				)
 				(polyline
 					(pts
 						(xy -2.54 -12.7) (xy -2.54 -2.54)
@@ -224,17 +235,6 @@
 					)
 					(fill
 						(type none)
-					)
-				)
-				(circle
-					(center -2.54 -12.7)
-					(radius 0.254)
-					(stroke
-						(width 0.254)
-						(type default)
-					)
-					(fill
-						(type outline)
 					)
 				)
 				(polyline
@@ -284,6 +284,17 @@
 						(type outline)
 					)
 				)
+				(circle
+					(center 1.27 -2.54)
+					(radius 0.254)
+					(stroke
+						(width 0.254)
+						(type default)
+					)
+					(fill
+						(type outline)
+					)
+				)
 				(polyline
 					(pts
 						(xy 1.27 -2.54) (xy 0 -2.54)
@@ -294,17 +305,6 @@
 					)
 					(fill
 						(type none)
-					)
-				)
-				(circle
-					(center 1.27 -2.54)
-					(radius 0.254)
-					(stroke
-						(width 0.254)
-						(type default)
-					)
-					(fill
-						(type outline)
 					)
 				)
 				(polyline
@@ -1144,7 +1144,7 @@
 				)
 				(polyline
 					(pts
-						(xy 7.62 -12.065) (xy 7.62 -13.335)
+						(xy 7.62 -12.065) (xy 7.62 -12.065)
 					)
 					(stroke
 						(width 0)
@@ -1156,7 +1156,7 @@
 				)
 				(polyline
 					(pts
-						(xy 7.62 -12.065) (xy 7.62 -12.065)
+						(xy 7.62 -12.065) (xy 7.62 -13.335)
 					)
 					(stroke
 						(width 0)
@@ -9859,6 +9859,7 @@
 				(font
 					(size 1.27 1.27)
 				)
+				(hide yes)
 			)
 		)
 		(pin "1"
