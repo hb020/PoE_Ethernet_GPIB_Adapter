@@ -1,0 +1,69 @@
+"null","Sourced","Placed","References","Value","Footprint","Manufacturer","Model","Quantity"
+1,"","","C4, C5, C6, C11, C12, C13, C14, C19, C20, C22, C23, C31, C32, C33, C34, C35, C36, C37, C38, C39, C40, C41","100n","C_0402_1005Metric","KEMET","C0402C104K4RACTU",22
+2,"","","C7, C8, C9, C10, C15, C16, C21, C24, C25, C26, C27, C28, C29, C30, C63, C64","10µ","C_0402_1005Metric","Murata","GRM155R60J106ME05D",16
+3,"","","C47, C48, C49, C50, C51, C52, C53, C54, C57","4.7n 1kV","C_0805_2012Metric","KEMET","C0805C472KDRACTU",9
+4,"","","C2, C3, C17, C18","18p","C_0402_1005Metric","YAGEO","CC0402GRNPO9BN180 ",4
+5,"","","C43, C44, C45, C46","10µ 100v","C_1210_3225Metric","Murata","GRM32EC72A106ME05L",4
+6,"","","C1, C62","47n","C_0402_1005Metric","KEMET","C0402C473K4RACTU",2
+7,"","","C59, C60","100µ","C_1206_3216Metric","Samsung","CL31A107MQHNNWE",2
+8,"","","C42","100n 100v","C_0603_1608Metric","Samsung","CL10B104KC8NNNC",1
+9,"","","C55","22pF","C_0603_1608Metric","YAGEO","CC0603JRNPOYBN220",1
+10,"","","C56","330pF","C_0603_1608Metric","YAGEO"," CC0603JRNPOYBN331",1
+11,"","","C58","470pF 1kV","C_0805_2012Metric","KEMET"," C0805C471KDRACTU",1
+12,"","","C61","100µ 6.3v","CP_Elec_5x5.3","Wurth Elektronik",865080142007,1
+13,"","","R23, R24, R25, R26, R27, R36, R37, R38, R39, R41, R42, R53, R54, R55, R56",49.9,"R_0402_1005Metric","Yageo","RC0402FR-0749R9L",15
+14,"","","R10, R11, R32, R33, R34, R35, R40",10,"R_0402_1005Metric","Yageo","RC0402FR-0710RL",7
+15,"","","R5, R7, R12, R17, R31","4.7k","R_0402_1005Metric","Yageo","RC0402FR-074K7L",5
+16,"","","R46, R47, R48, R49","1.5k","R_0603_1608Metric","Yageo","RC0603FR-131K5L",4
+17,"","","R3, R15, R16","27k","R_0402_1005Metric","Yageo","RC0402FR-0727KL",3
+18,"","","R18, R29, R30",220,"R_0402_1005Metric","Yageo","RC0402FR-07220RL",3
+19,"","","R6, R28","12.1k","R_0402_1005Metric","Yageo","RC0402FR-0712K1L",2
+20,"","","R13, R14","5.1k","R_0402_1005Metric","Yageo","RC0402FR-075K1L",2
+21,"","","R20, R21","1k","R_0402_1005Metric","Yageo","RC0402FR-071KL",2
+22,"","","R1","15k","R_0402_1005Metric","Yageo","RC0402FR-0715KL",1
+23,"","","R2","330k","R_0805_2012Metric","Yageo","RC0805FR-13330KL",1
+24,"","","R4","100k","R_0402_1005Metric","Yageo","RC0402FR-07100KL",1
+25,"","","R8","150k","R_0805_2012Metric","Yageo","RC0805FR-13150KL",1
+26,"","","R9","10k","R_0402_1005Metric","Yageo","RC0402FR-0710KL",1
+27,"","","R19","2.2k","R_0402_1005Metric","Yageo","RC0402FR-072K2L",1
+28,"","","R22","1M","R_0402_1005Metric","Yageo","RC0402FR-071ML",1
+29,"","","R43","24.9k","R_0402_1005Metric","Yageo","RC0402FR-0724K9L",1
+30,"","","R44","180k","R_0402_1005Metric","Yageo","RC0402FR-07180KL",1
+31,"","","R45","4.42k","R_0402_1005Metric","Yageo","RC0402FR-074K42L",1
+32,"","","R50",100,"R_0603_1608Metric","Yageo","RC0603FR-13100RL",1
+33,"","","R51",33,"R_0603_1608Metric","Yageo"," RC0603FR-1333RL",1
+34,"","","R52",0,"R_0603_1608Metric","Yageo"," RC0603FR-130RL ",1
+35,"","","L1","50475AC","muRata_5000A","MuRata","50475AC",1
+36,"","","L2","2.2µ","L_Taiyo-Yuden_NR-50xx","TAIYO YUDEN","NRS5030T2R2NMGJ",1
+37,"","","D1, D2","DT1240A-08LP3810","UDFN-9_1.0x3.8mm_P0.5mm","Diodes Incorporated ","DT1240A-08LP3810-7 ",2
+38,"","","D4, D10","1N4448WS","D_SOD-323","Diotec Semiconductor","1N4448WS",2
+39,"","","D6, D7","MYS80","Diode_Bridge_Diotec_MicroDil_3.0x3.0x1.8mm","Diotec Semiconductor","MYS80",2
+40,"","","D3","P4SMAJ5.0A","D_SMA","Diotec Semiconductor","P4SMAJ5.0A",1
+41,"","","D5","LED_ABGR","LED_RGB_Everlight_EASV3015RGBA0_Horizontal","Wurth","155124M173200",1
+42,"","","D8","P4SMAJ58CA","D_SMA","Diotec Semiconductor","P4SMAJ58CA",1
+43,"","","D9","DFLZ20-7  20V","D_PowerDI-123","Diodes Incorporated ","DFLZ20-7 ",1
+44,"","","D11","CUHS20S40","D_TUMD2","Toshiba","CUHS20S40,H3F",1
+45,"","","D12","5.6v","D_SOD-123F","Diotec Semiconductor","BZT52C5V6",1
+46,"","","U7, U8","SN74LV1T125DCK","SOT-353_SC-70-5","  Texas Instruments, Texas Instruments","SN74LV1T125DCKRG4",2
+47,"","","U1","LM5180","WSON-8-1EP_4x4mm_P0.8mm_EP1.98x3mm","Texas","LM5180NGUR",1
+48,"","","U2","ATmega4809-A","TQFP-48_7x7mm_P0.5mm","Microchip","ATMEGA4809-AU",1
+49,"","","U3","W5500","LQFP-48_7x7mm_P0.5mm","WIZnet","W5500",1
+50,"","","U4","24AA256UID","SOIC-8_3.9x4.9mm_P1.27mm","Microchip","24AA256UID-I/SN ",1
+51,"","","U5","USBLC6-2P6","SOT-666","STMicroelectronics ","USBLC6-2P6",1
+52,"","","U6","CH340X","MSOP-10_3x3mm_P0.5mm","Jiangsu Qin Heng","CH340X",1
+53,"","","U9","APX811-31UG-7","SOT-143","Diodes Incorporated","APX811-31UG-7",1
+54,"","","U10","AZ1117-3.3_SOT89","SOT-89-3","Diodes Incorporated","AZ1117CR2-3.3TRG1",1
+55,"","","U11","TPS2375-1","TSSOP-8_4.4x3mm_P0.65mm","Texas Instruments","TPS2375PWR-1",1
+56,"","","Y1","25Mhz","Crystal_SMD_2520-4Pin_2.5x2.0mm","ECS","ECS-250-18-36B2-CTY-TR",1
+57,"","","F1","0.75A","Fuse_1812_4532Metric","Eaton","PTS181213V075 ",1
+58,"","","SW1","Reset","SW_Tactile_SKHH_Angled","Alps Alpine","SKHHLUA010",1
+59,"","","RN1, RN2",10,"R_Array_Convex_8x0602","YAGEO","YC248-JR-0710RL",2
+60,"","","FB1","220R","L_0603_1608Metric","Bourns","MU1608-221Y ",1
+61,"","","FB2","1k","L_0805_2012Metric","Murata Electronics","BLM21PG102BH1D",1
+62,"","","Q1","PMV30XPEAR","SOT-23"," Nexperia","PMV30XPEAR",1
+63,"","","Q2","BC857BS","SOT-363_SC-70-6","Nexperia","BC857BS-QX",1
+64,"","","T1","~","ER14_planar_4_to_1_48v_in_5v_out_5w","TDK","B65513J0100A087",2
+65,"","","J1","ARJM11C7-114-BA-EW2","RJ45_ARJM11C7-114-BA-EW2","ABRACON","ARJM11C7-114-BA-EW2",1
+66,"","","J2","112-024-113R001","112-024-113R001","NorComp","112-024-113R001",1
+67,"","","J3","USB4105-GF-A","USB_C_Receptacle_GCT_USB4105-xx-A_16P_TopMnt_Horizontal","GCT","USB4105-GF-A",1
+68,"","","J4","UPDI Debug Connector","PinHeader_2x05_P1.27mm_Vertical","Amphenol","20021111-00010T1LF",1

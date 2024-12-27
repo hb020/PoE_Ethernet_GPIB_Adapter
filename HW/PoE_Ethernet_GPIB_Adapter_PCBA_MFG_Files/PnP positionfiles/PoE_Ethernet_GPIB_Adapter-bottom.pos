@@ -1,0 +1,32 @@
+### Footprint positions - created on 2024-12-27T10:59:04+0100 ###
+### Printed by KiCad version 8.99.0-3376-g16cbb218c6
+## Unit = mm, Angle = deg.
+## Side : bottom
+# Ref     Val        Package                         PosX       PosY       Rot  Side
+C42       100n_100v  C_0603_1608Metric           -20.7000   -19.9250  -90.0000  bottom
+C43       10µ_100v  C_1210_3225Metric           -18.2000   -22.0250  -90.0000  bottom
+C45       10µ_100v  C_1210_3225Metric            -1.9500   -22.4500  -90.0000  bottom
+C46       10µ_100v  C_1210_3225Metric             1.2500   -22.4500  -90.0000  bottom
+C47       4.7n_1kV   C_0805_2012Metric           -14.8500   -25.3750    0.0000  bottom
+C48       4.7n_1kV   C_0805_2012Metric           -14.8500   -19.3750    0.0000  bottom
+C49       4.7n_1kV   C_0805_2012Metric            -8.4500   -25.3250  180.0000  bottom
+C50       4.7n_1kV   C_0805_2012Metric            -8.4500   -19.3250  180.0000  bottom
+C51       4.7n_1kV   C_0805_2012Metric            -8.4500   -21.3250  180.0000  bottom
+C52       4.7n_1kV   C_0805_2012Metric            -8.4500   -23.3250  180.0000  bottom
+C53       4.7n_1kV   C_0805_2012Metric           -14.8500   -23.3750    0.0000  bottom
+C54       4.7n_1kV   C_0805_2012Metric           -14.8500   -21.3750    0.0000  bottom
+F1        0.75A      Fuse_1812_4532Metric        -19.3250    24.8000  180.0000  bottom
+FB2       1k         L_0805_2012Metric           -14.6000    24.8000    0.0000  bottom
+FID1      Fiducial   Fiducial_0.75mm_Mask1.5mm   -28.6750    21.8500  180.0000  bottom
+FID3      Fiducial   Fiducial_0.75mm_Mask1.5mm   -26.8250   -25.3000  180.0000  bottom
+FID5      Fiducial   Fiducial_0.75mm_Mask1.5mm    24.8750   -22.4750  180.0000  bottom
+FID7      Fiducial   Fiducial_0.75mm_Mask1.5mm    26.3000    24.4750  180.0000  bottom
+R8        150k       R_0805_2012Metric             4.8000   -19.8000  -90.0000  bottom
+R9        10k        R_0402_1005Metric             3.3449   -19.9000  -90.0000  bottom
+R44       180k       R_0402_1005Metric           -20.9500   -24.6000   90.0000  bottom
+R46       1.5k       R_0603_1608Metric           -12.4000   -24.4250   90.0000  bottom
+R47       1.5k       R_0603_1608Metric           -12.4000   -20.4750  -90.0000  bottom
+R48       1.5k       R_0603_1608Metric           -10.9000   -24.4250   90.0000  bottom
+R49       1.5k       R_0603_1608Metric           -10.9000   -20.4750  -90.0000  bottom
+U11       TPS2375-1  TSSOP-8_4.4x3mm_P0.65mm     -23.2000   -22.2250   90.0000  bottom
+## End
