@@ -57,25 +57,7 @@ See more of design choises and testing here:
 
 <hr />
 
-<h2>How to Embed Pictures</h2>
 
-<p>To embed pictures in markdown, use the following syntax:</p>
-
-<p><code>markdown
-![Alt Text](path/to/image.png)
-</code></p>
-
-<p>For example:</p>
-
-<p><code>markdown
-![Project Diagram](images/project-diagram.png)
-</code></p>
-
-<p>This will render as:</p>
-
-<p><img src="https://via.placeholder.com/300x150" alt="Example Image Placeholder" title="" /></p>
-
-<hr />
 
 <h2>Quick Links</h2>
 
@@ -94,9 +76,7 @@ See more of design choises and testing here:
 <h2>Acknowledgements</h2>
 
 <ul>
-<li>[Contributor 1]</li>
-<li>[Contributor 2]</li>
-<li>[Any tools or frameworks used]</li>
+<li>Big, big thanks the AR488 project that the current SW is forked from, run by Twilight-Logic</li>
 </ul>
 
 <h1>PoE<em>Ethernet</em>GPIB_Adapter</h1>
