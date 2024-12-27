@@ -48,7 +48,7 @@
         "silk_text_thickness": 0.15,
         "silk_text_upright": false,
         "zones": {
-          "min_clearance": 0.2
+          "min_clearance": 0.3
         }
       },
       "diff_pair_dimensions": [
@@ -59,10 +59,6 @@
         }
       ],
       "drc_exclusions": [
-        [
-          "clearance|-200000|4050000|a2f075c8-e441-472e-b4b6-fefe083f7f0a|a106c61a-b8d1-443f-8c3a-0d992a7fcc79",
-          ""
-        ],
         [
           "copper_edge_clearance|-329568|9505617|6ec66840-7109-4bf3-9275-2a650615137c|aa794a3e-7bf2-4eae-8df1-43344fce697d",
           ""
