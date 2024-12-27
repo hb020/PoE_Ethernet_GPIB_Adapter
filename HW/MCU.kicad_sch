@@ -753,7 +753,7 @@
 				)
 				(polyline
 					(pts
-						(xy -1.27 5.08) (xy 1.27 5.08)
+						(xy -1.27 5.08) (xy -2.54 5.08)
 					)
 					(stroke
 						(width 0)
@@ -765,7 +765,7 @@
 				)
 				(polyline
 					(pts
-						(xy -1.27 5.08) (xy -2.54 5.08)
+						(xy -1.27 5.08) (xy 1.27 5.08)
 					)
 					(stroke
 						(width 0)
@@ -825,7 +825,7 @@
 				)
 				(polyline
 					(pts
-						(xy -1.27 -5.08) (xy -2.54 -5.08)
+						(xy -1.27 -5.08) (xy 1.27 -5.08)
 					)
 					(stroke
 						(width 0)
@@ -837,7 +837,7 @@
 				)
 				(polyline
 					(pts
-						(xy -1.27 -5.08) (xy 1.27 -5.08)
+						(xy -1.27 -5.08) (xy -2.54 -5.08)
 					)
 					(stroke
 						(width 0)
@@ -953,6 +953,18 @@
 						(type none)
 					)
 				)
+				(polyline
+					(pts
+						(xy 1.27 1.27) (xy 1.27 -1.27) (xy -1.27 0) (xy 1.27 1.27)
+					)
+					(stroke
+						(width 0.254)
+						(type default)
+					)
+					(fill
+						(type none)
+					)
+				)
 				(rectangle
 					(start 1.27 1.27)
 					(end 1.27 1.27)
@@ -966,19 +978,7 @@
 				)
 				(polyline
 					(pts
-						(xy 1.27 1.27) (xy 1.27 -1.27) (xy -1.27 0) (xy 1.27 1.27)
-					)
-					(stroke
-						(width 0.254)
-						(type default)
-					)
-					(fill
-						(type none)
-					)
-				)
-				(polyline
-					(pts
-						(xy 1.27 0) (xy 2.54 0)
+						(xy 1.27 0) (xy -1.27 0)
 					)
 					(stroke
 						(width 0)
@@ -990,7 +990,7 @@
 				)
 				(polyline
 					(pts
-						(xy 1.27 0) (xy -1.27 0)
+						(xy 1.27 0) (xy 2.54 0)
 					)
 					(stroke
 						(width 0)

@@ -2097,7 +2097,7 @@
 			(symbol "Planar_core_0_1"
 				(rectangle
 					(start -12.7 8.89)
-					(end 12.7 -8.89)
+					(end -10.16 -8.89)
 					(stroke
 						(width 0)
 						(type default)
@@ -2108,7 +2108,7 @@
 				)
 				(rectangle
 					(start -12.7 8.89)
-					(end -10.16 -8.89)
+					(end 12.7 -8.89)
 					(stroke
 						(width 0)
 						(type default)
@@ -6440,7 +6440,7 @@
 		(exclude_from_sim no)
 		(in_bom yes)
 		(on_board yes)
-		(dnp no)
+		(dnp yes)
 		(uuid "27771abf-a064-4ad1-bb34-c8269e65c9b0")
 		(property "Reference" "R50"
 			(at 95.25 109.2199 0)
@@ -10803,7 +10803,7 @@
 		(exclude_from_sim no)
 		(in_bom yes)
 		(on_board yes)
-		(dnp no)
+		(dnp yes)
 		(uuid "b70b0790-8761-40e9-9f3f-fa8c44d792db")
 		(property "Reference" "C55"
 			(at 93.472 98.298 0)

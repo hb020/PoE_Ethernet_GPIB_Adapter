@@ -1,82 +1,65 @@
-<h1>PoE Ethernet GPIB  Adapter</h1>
 
+# PoE Ethernet GPIB Adapter
 
-<h2>PoE powered GPIB adapter with ethernet and USB-C support</h2>
+## PoE-powered GPIB Adapter with Ethernet and USB-C Support
 
+<a href="Img/adapter_connected.png" target="_blank">
+    <img src="Img/adapter_connected.png" alt="Adapter Assembled" width="800">
+</a>
 
-![Adapter_assebled](Img/adapter_connected.png)
+The **PoE Ethernet GPIB Adapter** is designed to interface test equipment with GPIB / HPIB / IEEE-488 interfaces.
 
+The primary goal of this project is to provide an easy solution to connect multiple GPIB-equipped instruments over Ethernet without excessive cabling.
 
-<p>The <strong>PoE Ethernet GPIB Adapter</strong> is designed to interface test equiptment with and GPIB / HPIB / IEEE-488 interface</p>
+---
 
-<p>The primary goal of this project is to have an easy solution to connect multiple GPIB equipted instruments over ethernet without excess cabling.</p>
-<p></p>
+## Why?
 
-<hr />
+The motivation behind this project comes from the challenges of using several generations of instruments with GPIB interfaces. In theory, only one GPIB master is needed, and up to 20+ instruments can be connected in any order using suitable GPIB cabling. However, there are drawbacks:
 
-<h2>Why?</h2>
+- Instruments must be fully compliant with the IEEE-488 standard. Many older instruments, predating the standard, do not comply. The main issue is that the bus does not go Hi-Z when off, requiring certain instruments to be powered on even if you're only using another device.
+- GPIB cabling is bulky and expensive. While used options can sometimes be found, the overall cost remains high.
 
-<p>The motivation behind this project comes from one of the drawbacks of several generations of instruments using GPIB. In theory one only need one GPIB master and up to 20+ instrument can be connected together in what ever order you like with sutible GPIB cabling. It is however a couple of drawbacks with this:</p>
+At work, this has been solved elegantly using commercial Ethernet adapters, each assigned an address and connected directly to the instrument. However, these adapters are priced around $500 USD—far from hobbyist-friendly. My initial solution was to buy one adapter and rely on daisy-chaining, but as my instrument collection grew to 20 devices requiring GPIB, this approach was no longer practical. Hence, the **PoE Ethernet GPIB Adapter** was born.
 
-<ul>
-<li>It requires the instrument to be fully compliant to the IEEE-488 standard, since older instrument was made before this standard was made, a lot of them is not compliant. Main problem with this is that the bus does not go Hi-Z when off, requiring certain instruments to be turned on, even if you only want to talk to another device.</li>
-<li>GPIB cabling is bulky and expensive. Altougth good deals can be had at the used marked, the price of the cables are generally on the higher side.</li>
-</ul>
+---
 
-<p>At work this has been solved elegantly by having a bunch of commerical availible Ethernet adapters, each is assigned an address and you just plug it in the back of the instrument. The drawback is the price of the adapter, retailing for about 500 USD. This is not hobby friendly, so my solution so far was to buy one adapter and stick with daisy-chaining. But due to the problems listed above and an instrument park that has grown to 20 devices requiring GPIB, this was not working out. And so the <strong>PoE Ethernet GPIB Adapter</strong> was born.
-</p>
+## Design Criteria
 
-<hr />
+1. Low cost: Cheaper than a single brand-name GPIB cable and 1/10th the price of brand-name GPIB adapters.
+2. Support Power over Ethernet (PoE) to minimize cable clutter.
+3. Include USB-C power as an alternative if PoE is unavailable.
+4. Enable GPIB communication over both Ethernet and USB-C interfaces.
+5. Use the same communication protocol as existing commercial units (via Telnet).
+6. Minimize radiated and conducted noise to avoid interference in test environments.
+7. Include a simple, easy-to-print 3D-printed enclosure to keep costs low.
 
-<h2>Design criteria</h2>
+---
 
-<ul>
-<li>Low cost, it should be cheaper than one single brand name GPIB interface cable and 1/10 of the price of brand name GPIB adapters.</li>
-<li>Support Power over Ethernet to reduce required cables needed.</li>
-<li>Support to be powered over USB-C should not PoE be available.</li>
-<li>Support GPIB communication over either the ethernet interface or thru serial USB-C interface.</li>
-<li>Use the same communication protocal as other avaialbe commercial units over telnet interace.</li>
-<li>Have low radiated and conducted noise as to not interfere with the test enviroment.</li>
-<li>Have an easy to print 3d-printed enclosure to keep it simple and low cost.</li>
-</ul>
+## Results
 
+All design goals have been met. The current unit price is approximately $45 USD when ordering parts for 20 units. Prices increase for smaller batch sizes.
 
-<h2>Results</h2>
+In my home lab, I assign each device a static IP address based on its MAC address and run a local DNS server to provide easy-to-remember domain names, making the adapter simple and intuitive to use.
 
-<p>All the design goals of this project has been met.
-The unit price is currently 32 USD in parts ordered from Mouser, less than a dollar in filament and the pcb cost is about 4 dollars max. This gives us a total of approx 40 USD per unit. This is when ordering parts for 20 units, price naturally goes up if fewer units is purchased.
-In my home lab I assign each device a static IP address based on MAC and run a local DNS server to assign an easy to remember domain, making the use of the design a breeze. 
+Project's documentation:
 
-See more of design choises and testing here:
+- [Design Documentation](docs/dn.md)
+- [Design Test Documentation](docs/dt.md)
 
-<ul>
-<li><a href="docs/dn.md">Design Documentation</a></li>
-<li><a href="docs/dt.md">Design test Documentation</a></li>
-<li><a href="docs/production-files.md">Production Files</a></li>
-</ul>
+---
 
-<hr />
+## Project files
 
+Latest version is avaiable under [Releases](https://github.com/Kofen/PoE_Ethernet_GPIB_Adapter/releases)
 
+And all the source code for all the parts should be in their respective folders in the repro. If anything is missing, let me know!
 
-<h2>Quick Links</h2>
+## License
 
-<ul>
-<li><a href="docs/installation-guide.md">Installation Guide</a></li>
-<li><a href="docs/usage-instructions.md">Usage Instructions</a></li>
-<li><a href="docs/faqs.md">FAQs</a></li>
-</ul>
+This project is licensed under the GPL V3. See the [LICENSE](LICENSE) file for details.
 
-<hr />
+## Acknowledgements
 
-<h2>License</h2>
+- A huge thanks to the [AR488 project](https://github.com/Twilight-Logic/AR488), run by [Twilight-Logic](https://github.com/Twilight-Logic) and its community contributors. The current software is a fork of AR488.
 
-<p>This project is licensed under the GPL V3. See the LICENSE file for details.</p>
-
-<h2>Acknowledgements</h2>
-
-<ul>
-<li>Big, big thanks the AR488 project that the current SW is forked from, run by Twilight-Logic</li>
-</ul>
-
-<h1>PoE<em>Ethernet</em>GPIB_Adapter</h1>

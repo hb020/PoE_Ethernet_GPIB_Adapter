@@ -1,0 +1,6 @@
+(sym_lib_table
+  (version 7)
+  (lib (name "Planar_symbol")(type "KiCad")(uri "${KIPRJMOD}/lib/Planar_symbol.kicad_sym")(options "")(descr ""))
+  (lib (name "Texas_flyback")(type "KiCad")(uri "${KIPRJMOD}/lib/Texas_flyback.kicad_sym")(options "")(descr ""))
+  (lib (name "EEPROM")(type "KiCad")(uri "${KIPRJMOD}/lib/EEPROM.kicad_sym")(options "")(descr ""))
+)

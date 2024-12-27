@@ -237,7 +237,7 @@
 						(type default)
 					)
 					(fill
-						(type none)
+						(type outline)
 					)
 				)
 				(arc
@@ -249,7 +249,7 @@
 						(type default)
 					)
 					(fill
-						(type outline)
+						(type none)
 					)
 				)
 				(arc
@@ -285,7 +285,7 @@
 						(type default)
 					)
 					(fill
-						(type none)
+						(type outline)
 					)
 				)
 				(arc
@@ -297,7 +297,7 @@
 						(type default)
 					)
 					(fill
-						(type outline)
+						(type none)
 					)
 				)
 				(polyline
@@ -5389,7 +5389,7 @@
 	)
 	(symbol
 		(lib_id "power:GND")
-		(at 34.29 31.75 0)
+		(at 36.83 31.75 0)
 		(unit 1)
 		(exclude_from_sim no)
 		(in_bom yes)
@@ -5397,7 +5397,7 @@
 		(dnp no)
 		(uuid "4c162418-8ab0-4da8-b515-d6ac813ac9d2")
 		(property "Reference" "#PWR028"
-			(at 34.29 38.1 0)
+			(at 36.83 38.1 0)
 			(effects
 				(font
 					(size 1.27 1.27)
@@ -5406,7 +5406,7 @@
 			)
 		)
 		(property "Value" "GND"
-			(at 34.29 35.56 0)
+			(at 36.83 35.56 0)
 			(effects
 				(font
 					(size 1.27 1.27)
@@ -5414,7 +5414,7 @@
 			)
 		)
 		(property "Footprint" ""
-			(at 34.29 31.75 0)
+			(at 36.83 31.75 0)
 			(effects
 				(font
 					(size 1.27 1.27)
@@ -5423,7 +5423,7 @@
 			)
 		)
 		(property "Datasheet" ""
-			(at 34.29 31.75 0)
+			(at 36.83 31.75 0)
 			(effects
 				(font
 					(size 1.27 1.27)
@@ -5432,7 +5432,7 @@
 			)
 		)
 		(property "Description" "Power symbol creates a global label with name \"GND\" , ground"
-			(at 34.29 31.75 0)
+			(at 36.83 31.75 0)
 			(effects
 				(font
 					(size 1.27 1.27)
@@ -6211,7 +6211,7 @@
 	)
 	(symbol
 		(lib_id "Device:C")
-		(at 34.29 27.94 0)
+		(at 36.83 27.94 0)
 		(unit 1)
 		(exclude_from_sim no)
 		(in_bom yes)
@@ -6219,7 +6219,7 @@
 		(dnp no)
 		(uuid "83ff9df0-5277-4411-b46a-3518473361ce")
 		(property "Reference" "C7"
-			(at 37.338 25.908 0)
+			(at 39.878 25.908 0)
 			(effects
 				(font
 					(size 1.27 1.27)
@@ -6228,7 +6228,7 @@
 			)
 		)
 		(property "Value" "10µ"
-			(at 34.798 30.226 0)
+			(at 37.338 30.226 0)
 			(effects
 				(font
 					(size 1.27 1.27)
@@ -6237,7 +6237,7 @@
 			)
 		)
 		(property "Footprint" "Capacitor_SMD:C_0402_1005Metric"
-			(at 35.2552 31.75 0)
+			(at 37.7952 31.75 0)
 			(effects
 				(font
 					(size 1.27 1.27)
@@ -6246,7 +6246,7 @@
 			)
 		)
 		(property "Datasheet" "~"
-			(at 34.29 27.94 0)
+			(at 36.83 27.94 0)
 			(effects
 				(font
 					(size 1.27 1.27)
@@ -6255,7 +6255,7 @@
 			)
 		)
 		(property "Description" "Unpolarized capacitor"
-			(at 34.29 27.94 0)
+			(at 36.83 27.94 0)
 			(effects
 				(font
 					(size 1.27 1.27)
@@ -6264,7 +6264,7 @@
 			)
 		)
 		(property "Model" "GRM155R60J106ME05D"
-			(at 34.29 27.94 0)
+			(at 36.83 27.94 0)
 			(effects
 				(font
 					(size 1.27 1.27)
@@ -6273,7 +6273,7 @@
 			)
 		)
 		(property "Manufacturer" "Murata"
-			(at 34.29 27.94 0)
+			(at 36.83 27.94 0)
 			(effects
 				(font
 					(size 1.27 1.27)
@@ -6282,7 +6282,7 @@
 			)
 		)
 		(property "JLCPCB" "C15525"
-			(at 34.29 27.94 0)
+			(at 36.83 27.94 0)
 			(effects
 				(font
 					(size 1.27 1.27)
@@ -6673,7 +6673,7 @@
 	)
 	(symbol
 		(lib_id "power:VBUS")
-		(at 34.29 24.13 0)
+		(at 36.83 24.13 0)
 		(unit 1)
 		(exclude_from_sim no)
 		(in_bom yes)
@@ -6682,7 +6682,7 @@
 		(fields_autoplaced yes)
 		(uuid "91cc335d-79ef-4720-b54c-edb7f3d0425f")
 		(property "Reference" "#PWR027"
-			(at 34.29 27.94 0)
+			(at 36.83 27.94 0)
 			(effects
 				(font
 					(size 1.27 1.27)
@@ -6691,7 +6691,7 @@
 			)
 		)
 		(property "Value" "VBUS"
-			(at 34.29 19.05 0)
+			(at 36.83 19.05 0)
 			(effects
 				(font
 					(size 1.27 1.27)
@@ -6699,7 +6699,7 @@
 			)
 		)
 		(property "Footprint" ""
-			(at 34.29 24.13 0)
+			(at 36.83 24.13 0)
 			(effects
 				(font
 					(size 1.27 1.27)
@@ -6708,7 +6708,7 @@
 			)
 		)
 		(property "Datasheet" ""
-			(at 34.29 24.13 0)
+			(at 36.83 24.13 0)
 			(effects
 				(font
 					(size 1.27 1.27)
@@ -6717,7 +6717,7 @@
 			)
 		)
 		(property "Description" "Power symbol creates a global label with name \"VBUS\""
-			(at 34.29 24.13 0)
+			(at 36.83 24.13 0)
 			(effects
 				(font
 					(size 1.27 1.27)

@@ -48,7 +48,7 @@
         "silk_text_thickness": 0.15,
         "silk_text_upright": false,
         "zones": {
-          "min_clearance": 0.3
+          "min_clearance": 0.2
         }
       },
       "diff_pair_dimensions": [
@@ -60,11 +60,175 @@
       ],
       "drc_exclusions": [
         [
-          "copper_edge_clearance|-329568|9505617|6ec66840-7109-4bf3-9275-2a650615137c|aa794a3e-7bf2-4eae-8df1-43344fce697d",
+          "clearance|-1000000|4050000|a106c61a-b8d1-443f-8c3a-0d992a7fcc79|a2f075c8-e441-472e-b4b6-fefe083f7f0a",
           ""
         ],
         [
-          "copper_edge_clearance|-893988|9447309|6ec66840-7109-4bf3-9275-2a650615137c|29a648c3-8277-4588-b6e8-53b733124882",
+          "clearance|-15635000|13145000|27940ad9-cb0a-4096-8436-59096dacc583|f1e431e3-0d79-49aa-9f1c-6ae24e2668cf",
+          ""
+        ],
+        [
+          "clearance|-15635000|8065000|c292d161-43dd-4334-9bc0-99b5ff723dec|6f9e2fed-d510-43f9-884b-12203f548f32",
+          ""
+        ],
+        [
+          "clearance|-15635000|8065000|c292d161-43dd-4334-9bc0-99b5ff723dec|a544f69d-55bd-472e-a24f-c6c4efdb7b38",
+          ""
+        ],
+        [
+          "clearance|-16185000|13145000|27940ad9-cb0a-4096-8436-59096dacc583|998303d3-6b2b-418e-b66c-8e140d550c39",
+          ""
+        ],
+        [
+          "clearance|-26160579|11141336|78cb43ae-2e1e-4d67-bab7-d069a089e935|a57027bd-8e2f-437a-adc7-46ba5d4fb814",
+          ""
+        ],
+        [
+          "clearance|-27438000|19450000|5c01b171-4b82-42a5-b860-b438234404a2|c39653ff-380c-4e75-99dd-ee9b2c93bd32",
+          ""
+        ],
+        [
+          "clearance|-27438000|19450000|5c01b171-4b82-42a5-b860-b438234404a2|fb743683-b69d-4345-8e84-5d57b00188bc",
+          ""
+        ],
+        [
+          "clearance|-27637167|18969167|4ade215e-85ed-4d4c-80ee-46bb165a76ef|c39653ff-380c-4e75-99dd-ee9b2c93bd32",
+          ""
+        ],
+        [
+          "clearance|-27637167|18969167|4ade215e-85ed-4d4c-80ee-46bb165a76ef|fb743683-b69d-4345-8e84-5d57b00188bc",
+          ""
+        ],
+        [
+          "clearance|-27637167|19930833|6e122546-0a51-4f14-8088-5396753a0f9f|c39653ff-380c-4e75-99dd-ee9b2c93bd32",
+          ""
+        ],
+        [
+          "clearance|-27637167|19930833|6e122546-0a51-4f14-8088-5396753a0f9f|fb743683-b69d-4345-8e84-5d57b00188bc",
+          ""
+        ],
+        [
+          "clearance|-27824167|18782167|4ade215e-85ed-4d4c-80ee-46bb165a76ef|0ebccc62-9810-4ed0-a2db-9b31c1a97cca",
+          ""
+        ],
+        [
+          "clearance|-27900000|14800000|b19335fd-2938-4dc2-b03d-b87d7ee674e1|096aab9f-2725-4195-8032-bcb64ce7b09f",
+          ""
+        ],
+        [
+          "clearance|-27900000|15425000|9d3056de-2b92-49d9-9b29-5b19f22cf98f|a5bc09e0-b428-4218-a601-6c4e0831d1a9",
+          ""
+        ],
+        [
+          "clearance|-27900000|18706334|4ade215e-85ed-4d4c-80ee-46bb165a76ef|096aab9f-2725-4195-8032-bcb64ce7b09f",
+          ""
+        ],
+        [
+          "clearance|-27900000|18706334|4ade215e-85ed-4d4c-80ee-46bb165a76ef|ba3a0c2e-88d1-43da-9daf-74947e09c7c7",
+          ""
+        ],
+        [
+          "clearance|-27900000|18706334|9d3056de-2b92-49d9-9b29-5b19f22cf98f|096aab9f-2725-4195-8032-bcb64ce7b09f",
+          ""
+        ],
+        [
+          "clearance|-27900000|18706334|9d3056de-2b92-49d9-9b29-5b19f22cf98f|0ebccc62-9810-4ed0-a2db-9b31c1a97cca",
+          ""
+        ],
+        [
+          "clearance|-27900000|18706334|9d3056de-2b92-49d9-9b29-5b19f22cf98f|ba3a0c2e-88d1-43da-9daf-74947e09c7c7",
+          ""
+        ],
+        [
+          "clearance|-27900000|18706334|9d3056de-2b92-49d9-9b29-5b19f22cf98f|c39653ff-380c-4e75-99dd-ee9b2c93bd32",
+          ""
+        ],
+        [
+          "clearance|-28986128|13966885|78cb43ae-2e1e-4d67-bab7-d069a089e935|096aab9f-2725-4195-8032-bcb64ce7b09f",
+          ""
+        ],
+        [
+          "clearance|-28986128|13966885|78cb43ae-2e1e-4d67-bab7-d069a089e935|9cafaa91-6360-4908-918b-0681880830d2",
+          ""
+        ],
+        [
+          "clearance|-29125000|14428012|f1ca0ea7-2c0d-4a55-a57a-6c1eddd7ac5d|9cafaa91-6360-4908-918b-0681880830d2",
+          ""
+        ],
+        [
+          "clearance|-29125000|19025000|f1ca0ea7-2c0d-4a55-a57a-6c1eddd7ac5d|096aab9f-2725-4195-8032-bcb64ce7b09f",
+          ""
+        ],
+        [
+          "clearance|-29125000|19025000|f1ca0ea7-2c0d-4a55-a57a-6c1eddd7ac5d|ba3a0c2e-88d1-43da-9daf-74947e09c7c7",
+          ""
+        ],
+        [
+          "clearance|-29800004|13750004|c8b14a8d-bda4-4628-b6c5-9ac4321043c1|3da871ef-240b-415a-9a95-10715f531cd9",
+          ""
+        ],
+        [
+          "clearance|-29800004|13891994|12ce612f-0c3a-4b28-9c5a-a0973a156872|3da871ef-240b-415a-9a95-10715f531cd9",
+          ""
+        ],
+        [
+          "clearance|-29800004|14105757|12ce612f-0c3a-4b28-9c5a-a0973a156872|78cb43ae-2e1e-4d67-bab7-d069a089e935",
+          ""
+        ],
+        [
+          "clearance|-29800004|14105757|12ce612f-0c3a-4b28-9c5a-a0973a156872|f1ca0ea7-2c0d-4a55-a57a-6c1eddd7ac5d",
+          ""
+        ],
+        [
+          "clearance|-29800004|14520997|12ce612f-0c3a-4b28-9c5a-a0973a156872|71cb271c-aa81-4aa5-8e21-b47ea47ea621",
+          ""
+        ],
+        [
+          "clearance|-29800004|15170997|12ce612f-0c3a-4b28-9c5a-a0973a156872|a65e452b-bffd-4750-a0af-67e6d5419c02",
+          ""
+        ],
+        [
+          "clearance|-29800004|15800000|12ce612f-0c3a-4b28-9c5a-a0973a156872|88921024-f41a-497e-9705-cfc65e72eb79",
+          ""
+        ],
+        [
+          "clearance|-29800004|16450000|5d55af4f-888d-479e-907e-a97c21e3c3ff|12ce612f-0c3a-4b28-9c5a-a0973a156872",
+          ""
+        ],
+        [
+          "clearance|-29800004|17100000|5d49352d-b4a3-4ed1-86c5-45db08d8c160|12ce612f-0c3a-4b28-9c5a-a0973a156872",
+          ""
+        ],
+        [
+          "clearance|-29800004|17729003|12ce612f-0c3a-4b28-9c5a-a0973a156872|cfb9a9f6-0a56-4088-b76c-7e4eaae25351",
+          ""
+        ],
+        [
+          "clearance|-29800004|18375000|12ce612f-0c3a-4b28-9c5a-a0973a156872|44886152-77ce-4aed-a1c6-b33d5a426395",
+          ""
+        ],
+        [
+          "clearance|-29800004|19004003|12ce612f-0c3a-4b28-9c5a-a0973a156872|67d10eeb-4b49-480a-a9b7-9368596fd6b3",
+          ""
+        ],
+        [
+          "clearance|-29800004|19654003|12ce612f-0c3a-4b28-9c5a-a0973a156872|172d98a4-60ac-4bb2-8ea4-38b4172309c6",
+          ""
+        ],
+        [
+          "clearance|-29800004|20304003|12ce612f-0c3a-4b28-9c5a-a0973a156872|7297ff41-6363-453a-b451-167b8ab34f85",
+          ""
+        ],
+        [
+          "clearance|-29800004|20367268|12ce612f-0c3a-4b28-9c5a-a0973a156872|3d436644-09a1-4d97-9fab-dfe2895991d3",
+          ""
+        ],
+        [
+          "clearance|-29800004|20849996|12ce612f-0c3a-4b28-9c5a-a0973a156872|8112ec56-d20a-48b8-a4b6-6fc328300597",
+          ""
+        ],
+        [
+          "clearance|-29800004|20849996|b0d23db5-0d0c-4a90-846f-4a6afba7cfb2|8112ec56-d20a-48b8-a4b6-6fc328300597",
           ""
         ],
         [
@@ -528,6 +692,13 @@
         "via_diameter": 0.45,
         "via_drill": 0.3,
         "wire_width": 6
+      },
+      {
+        "clearance": 0.3,
+        "name": "PoE",
+        "pcb_color": "rgba(0, 0, 0, 0.000)",
+        "priority": 0,
+        "schematic_color": "rgba(0, 0, 0, 0.000)"
       }
     ],
     "meta": {
@@ -535,17 +706,22 @@
     },
     "net_colors": null,
     "netclass_assignments": null,
-    "netclass_patterns": []
+    "netclass_patterns": [
+      {
+        "netclass": "PoE",
+        "pattern": "/Ethernet_interface/VC*"
+      }
+    ]
   },
   "pcbnew": {
     "last_paths": {
       "gencad": "",
       "idf": "",
       "netlist": "",
-      "plot": "Ethernet_GPIB_Adapter_Rev1_Gerber_for_manufacturing",
-      "pos_files": "",
+      "plot": "PCBA_MFG_Files/Gerber/",
+      "pos_files": "PoE_Ethernet_GPIB_Adapter_PCBA_MFG_Files/",
       "specctra_dsn": "",
-      "step": "",
+      "step": "PoE_Ethernet_GPIB_Adapter_PCBA_MFG_Files/STEP/PoE_Ethernet_GPIB_Adapter.step",
       "svg": "",
       "vrml": ""
     },
