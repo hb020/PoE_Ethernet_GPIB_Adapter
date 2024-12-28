@@ -26,7 +26,7 @@ At work, this has been solved elegantly using commercial Ethernet adapters, each
 
 ## Design Criteria
 
-1. Low cost: Cheaper than a single brand-name GPIB cable and 1/10th the price of brand-name GPIB adapters.
+1. Lower cost: Total BOM should be less than 50 USD.
 2. Support Power over Ethernet (PoE) to minimize cable clutter.
 3. Include USB-C power as an alternative if PoE is unavailable.
 4. Enable GPIB communication over both Ethernet and USB-C interfaces.
