@@ -49,7 +49,7 @@ private:
 #ifdef DATAPORT_ENABLE
 
   extern Stream* dataPort;
-  void startDataPort(byte* mac,IPAddress* ip);
+  void startDataPort(byte* mac,IPAddress ip);
   
   #define DATAPORT_START() startDataPort()
   #define DATA_RAW_PRINT(str) dataPort->print(str)

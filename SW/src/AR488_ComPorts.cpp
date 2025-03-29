@@ -80,7 +80,7 @@ int DEVNULL::lastByte()
 
 Stream* dataPort = nullptr;
 
-void startDataPort(byte* mac, IPAddress* ip) {
+void startDataPort(byte* mac, IPAddress ip) {
   #ifdef AR_ETHERNET_PORT
     //byte mac[] = { 0xDE, 0xAD, 0xBE, 0xEF, 0xFE, 0xED }; // Temporary hard coded MAC
     //IPAddress ip(0, 0, 0, 0); // Same

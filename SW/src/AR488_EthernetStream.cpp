@@ -35,8 +35,9 @@ void EthernetStream::checkClient() {
     if (client) {
         lastActivityTime = millis();
     }
+}
 
-}int EthernetStream::available() {
+int EthernetStream::available() {
     checkClient();
     if (!client) {
         client = server.available();
