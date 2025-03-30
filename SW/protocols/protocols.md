@@ -27,11 +27,10 @@ Requires
 
 Example of connection string:
 
-TCPIP::192.168.1.105::gpib,5::INSTR   (gpib or hpib or gpibN or hpibN): VXI-11.2
-TCPIP::192.168.1.105::inst::INSTR     (instN): 'normal' vxi-11
+* TCPIP::192.168.1.105::gpib,5::INSTR   (gpib or hpib or gpibN or hpibN): VXI-11.2
+* TCPIP::192.168.1.105::inst::INSTR     (instN): 'normal' vxi-11
 
-gpib0 or inst0: default or only
-hpibN or instN: others
+gpib0 or inst0: default or only, hpibN or instN: others
 
 Requires 3 servers:
 
@@ -44,7 +43,8 @@ For compatibility with basic pyvisa use, you only need DEVICE_CORE, but the guid
 While in theory one could re-use an existing VXI-11 RPC server socket, thereby only requiring 3 socket connections, 
 pyvisa requires 1 client socket per device. It doesn't just use create_link on the same socket with a different device name.
 
-Other inspiration: See https://github.com/coburnw/python-vxi11-server Uses TCPServer and threading.
+Other inspiration: See https://github.com/coburnw/python-vxi11-server
+Uses TCPServer and threading.
 
 Maybe go multiplexing? Because that is what arduino will do. TODO: will it?
 
