@@ -21,8 +21,6 @@ Example of connection string:
 
 TCPIP::192.168.1.105::[port number]::SOCKET
 
-Requires
-
 ## VXI-11.2
 
 Example of connection string:

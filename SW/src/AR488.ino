@@ -312,7 +312,9 @@ void setup() {
 
 #ifdef DEBUG_ENABLE
   // Initialise debug port
-  DB_SERIAL_PORT.begin(DB_SERIAL_SPEED);
+
+  startDebugPort();
+  debugPort.println("Starting");
 #endif
 
 
