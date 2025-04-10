@@ -1270,6 +1270,7 @@ void read_h(char *params) {
   } else {
     // If auto mode is disabled we do a single read
     gpibBus.addressDevice(gpibBus.cfg.paddr, TALK);
+    debugPort.printf("gpibBus.receiveData(*dataPort, %d, %d, %d)\n", readWithEoi, readWithEndByte, endByte);
     gpibBus.receiveData(*dataPort, readWithEoi, readWithEndByte, endByte);
   }
 }
