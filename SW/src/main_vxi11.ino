@@ -228,10 +228,12 @@ class SCPI_handler : public SCPI_handler_interface {
         return true;
 #else
         bufStream buf = bufStream(data, max_len);  ///< Buffer stream for incoming data
-
+        
+        readWithEoi = true;
+        
         gpibBus.cfg.paddr = address;
         gpibBus.addressDevice(gpibBus.cfg.paddr, TALK);     // tel device 'paddr' to talk. If you do this and the device has nothing to say, you might get an error.
-        gpibBus.receiveData(buf, readWithEoi, true, '\n');  // get the data from the bus and send out
+        gpibBus.receiveData(buf, readWithEoi, false, 0);  // get the data from the bus and send out
         *len = buf.len();
         return true;
 #endif
