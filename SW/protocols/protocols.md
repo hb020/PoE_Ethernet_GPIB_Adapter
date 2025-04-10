@@ -54,3 +54,10 @@ If we can make it work, the device will NOT support:
 * instrument locking via VXI-11
 * VXI-11 interrupts
 * the VXI-11 abort channel
+
+# Free SRAM usage investigations
+
+Device startup: 5243
+Prologix startup: 5180 (-63 bytes)
+Prologix telnet connected: 5063 (-117 bytes)
+Prologix SCPI comms: 5063++more (-0 bytes)

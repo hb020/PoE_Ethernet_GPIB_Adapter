@@ -289,6 +289,13 @@ void setup() {
   digitalWrite(LED_R, HIGH);
   digitalWrite(LED_G, HIGH);
   digitalWrite(LED_B, HIGH);
+#ifdef DEBUG_ENABLE
+  // Initialise debug port
+
+  startDebugPort();
+  debugPort.println(F("Starting"));
+  display_freeram();
+#endif  
 
   // Disable the watchdog (needed to prevent WDT reset loop)
 #ifdef __AVR__
@@ -300,28 +307,22 @@ void setup() {
   digitalWrite(REMOTE_SIGNAL_PIN, LOW);
 #endif
   //Debug I2C
-    eeprom.begin();
-    uint8_t macAddress[6];
-    eeprom.getMACAddress(macAddress);
+  eeprom.begin();
+  uint8_t macAddress[6];
+  eeprom.getMACAddress(macAddress);
+
+#ifdef DEBUG_ENABLE
+  debugPort.print(F("MAC Address: "));
+  printHexArray(macAddress, 6);
+  debugPort.println(F("Waiting for DHCP..."));
+#endif    
+
   IPAddress ip = (0,0,0,0);
   // Initialise parse buffer
   flushPbuf();
 
   // Initialise dataport, serial or ethernet as defined
   startDataPort(macAddress, ip);
-
-#ifdef DEBUG_ENABLE
-  // Initialise debug port
-
-  startDebugPort();
-  debugPort.println("Starting");
-#endif
-
-
-
-
-
-
 
 #ifdef E2END
 //  DB_RAW_PRINTLN(F("EEPROM detected!"));
@@ -358,6 +359,11 @@ void setup() {
   }
 #endif
 
+#ifdef DEBUG_ENABLE
+  debugPort.print(F("IP Address: "));
+  debugPort.println(Ethernet.localIP());
+  debugPort.println(F("Starting now"));
+#endif   
 
 }
 /****** End of Arduino standard SETUP procedure *****/
@@ -392,13 +398,41 @@ uint16_t calculateBrightness(uint32_t phase)
     return p + p; 
 }
 
+void display_freeram() {
+#ifdef DEBUG_ENABLE  
+  debugPort.print(F("- SRAM left: "));
+  debugPort.println(freeRam());
+#endif
+}
 
+int freeRam() {
+  /* for AVR, not ARM */
+  extern int __heap_start,*__brkval;
+  int v;
+  return (int)&v - (__brkval == 0  
+    ? (int)&__heap_start : (int) __brkval);  
+}
+
+void onceASecond()
+{
+	static const unsigned long REFRESH_INTERVAL = 1000; // ms
+	static unsigned long lastRefreshTime = 0;
+	
+	if(millis() - lastRefreshTime >= REFRESH_INTERVAL)
+	{
+		lastRefreshTime += REFRESH_INTERVAL;
+    display_freeram();
+	}
+}
 
 
 /***** ARDUINO MAIN LOOP *****/
 void loop() {
 
+
   LEDPulse();
+  onceASecond();
+
   bool errFlg = false; 
   maintainDataPort();  // Maintain the data port connection
 /*** Macros ***/
