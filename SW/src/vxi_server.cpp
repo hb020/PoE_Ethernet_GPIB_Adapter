@@ -28,10 +28,18 @@ uint32_t VXI_Server::allocate()
     return port;
 }
 
-void VXI_Server::begin(uint32_t port, bool debug)
+/**
+ * @brief Start the VXI server on the specified port.
+ * 
+ * @param port TCP port to listen on
+ * @param address the device address in the GPIB bus to represent
+ * @param debug true when debug messages are to be printed
+ */
+void VXI_Server::begin(uint32_t port, int address, bool debug)
 {
-    vxi_port = port;
+    this->vxi_port = port;
     this->debug = debug;
+    this->address = address;
 
     if (tcp_server) {
         delete tcp_server;
@@ -198,7 +206,7 @@ void VXI_Server::read()
     // This is where we read from the device
     char outbuffer[256];
     size_t len = 0;
-    bool rv = scpi_handler.read(outbuffer, &len, sizeof(outbuffer));
+    bool rv = scpi_handler.read(address, outbuffer, &len, sizeof(outbuffer));
 
     // FIXME handle error codes, maybe even pick up errors from the SCPI Parser
 
@@ -234,7 +242,7 @@ void VXI_Server::write()
         printBuf(write_request->data, (int)len);
     }
     /*  Parse and respond to the SCPI command  */
-    scpi_handler.write(write_request->data, len);
+    scpi_handler.write(address, write_request->data, len);
 
     /*  Generate the response  */
     write_response->rpc_status = rpc::SUCCESS;

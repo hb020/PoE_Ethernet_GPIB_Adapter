@@ -90,7 +90,7 @@ void setup_serial(const __FlashStringHelper* helloStr) {
     startDebugPort();
     debugPort.println(helloStr);
     display_freeram();
-    debugPort.println("")
+    debugPort.println("");
 }
 
 /**

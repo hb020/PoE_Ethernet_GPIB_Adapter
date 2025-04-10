@@ -205,7 +205,7 @@ public:
   enum gpibHandshakeStates readByte(uint8_t *db, bool readWithEoi, bool *eoi);
   enum gpibHandshakeStates writeByte(uint8_t db, bool isLastByte);
   bool receiveData(Stream &dataStream, bool detectEoi, bool detectEndByte, uint8_t endByte);
-  void sendData(char *data, uint8_t dsize);
+  void sendData(const char *data, uint8_t dsize);
   void clearDataBus();
   void setControlVal(uint8_t value, uint8_t mask, uint8_t mode);
   void setDataVal(uint8_t);

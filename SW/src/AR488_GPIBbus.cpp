@@ -650,7 +650,7 @@ bool GPIBbus::receiveData(Stream &dataStream, bool detectEoi, bool detectEndByte
 
 
 /***** Send a series of characters as data to the GPIB bus *****/
-void GPIBbus::sendData(char *data, uint8_t dsize) {
+void GPIBbus::sendData(const char *data, uint8_t dsize) {
 
   //  bool err = false;
   uint8_t tc;
