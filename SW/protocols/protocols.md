@@ -7,8 +7,8 @@
 Suppose N is the number of instruments to be represented:
 
 * prologix: 1: TCP server
-* RAW: N or N+1 (if you also want the instrument server): all TCP servers
-* VXI-11.2: N+2 or N+3 (if you also want the instrument server): 1 UDP portmapper, 1 TCP portmapper and the rest RPC servers
+* RAW: N or N+1 (if you also want the instrument server): all TCP servers in 'auto' mode
+* VXI-11.2: N+2 or N+3 (if you also want the instrument server): 1 UDP portmapper, 1 TCP portmapper and the rest RPC servers in non-'auto' mode.
 * hislip: not investigated, requires a LOT
 
 ## prologix
@@ -57,7 +57,26 @@ If we can make it work, the device will NOT support:
 
 # Free SRAM usage investigations
 
-Device startup: 5243
-Prologix startup: 5180 (-63 bytes)
-Prologix telnet connected: 5063 (-117 bytes)
-Prologix SCPI comms: 5063++more (-0 bytes)
+| Type | Device startup | Services started | Client connected | GPIB Comms |
+|---|---|---|---|---|
+| Prologix | 5243 | 5180 (-63) | 5063 (-117) | 5063 (-0) |
+| RAW 4, echo | 5163 | 4911 (-252) | 4911 (0) | - as long as the buffer is/was, since it is a String |
+
+# Interaction between ethernet and GPIB
+
+All based on `gpibBus.isController() == true`
+
+## Write data to GPIB
+
+```cpp
+if (!gpibBus.haveAddressedDevice()) gpibBus.addressDevice(gpibBus.cfg.paddr, LISTEN);
+gpibBus.sendData(buffr, dsize);
+gpibBus.unAddressDevice();
+```
+
+## Read data from GPIB
+
+```cpp
+gpibBus.addressDevice(gpibBus.cfg.paddr, TALK);  // tel device 'paddr' to talk. If you do this and the device has nothing to say, you might get an error.
+gpibBus.receiveData(*dataPort, readWithEoi, readWithEndByte, endByte); // get the data from the bus and send out
+```

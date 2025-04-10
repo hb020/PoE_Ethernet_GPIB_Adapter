@@ -1,7 +1,13 @@
-#ifdef INTERFACE_PROLOGIX
+#ifdef INTERFACE_RAW
 //#pragma GCC diagnostic push
 //#pragma GCC diagnostic ignored "-Wtype-limits"
 //#pragma GCC diagnostic ignored "-Wunused-variable"
+
+
+// STATUS:
+// WIP, just tested an echo server on 4 ports. This uses the AR488_EThernetStream class 
+// that uses a String as output buffer (flushed upon \n). That could be improved and changed to a static buffer.
+// But main problem is the auto switching between LISTEN and TALK. VXI-11 is better for that, as it is explicit.
 
 #ifdef __AVR__
   #include <avr/wdt.h>
@@ -16,123 +22,13 @@
 
 #include "24AA256UID.h"
 #include "AR488_EthernetStream.h"
-
-/***** FWVER "AR488 GPIB controller, ver. 0.51.29, 18/03/2024" *****/
-
-/*
-  Arduino IEEE-488 implementation by John Chajecki
-
-  Inspired by the original work of Emanuele Girlando, licensed under a Creative
-  Commons Attribution-NonCommercial-NoDerivatives 4.0 International License.
-  Any code in common with the original work is reproduced here with the explicit
-  permission of Emanuele Girlando, who has kindly reviewed and tested the
-  initial version of this project code.
-
-  Thanks also to Luke Mester for comparison testing against the Prologix interface.
-  AR488 is Licenced under the GNU Public licence.
-
-  Thanks to 'maxwell3e10' on the EEVblog forum for suggesting additional auto mode
-  settings and the macro feature.
-
-  Thanks to 'artag' on the EEVblog forum for providing code for the 32u4.
-*/
-
-/*
-   Implements most of the CONTROLLER functions;
-   Substantially compatible with 'standard' Prologix "++" commands
-   (see +savecfg command in the manual for differences)
-
-   Principle of operation:
-   - Commands received from USB are buffered and whole terminated lines processed
-   - Interface commands prefixed with "++" are passed to the command handler
-   - Instrument commands and data not prefixed with '++' are sent directly to the GPIB bus.
-   - To receive from the instrument, issue a ++read command or put the controller in auto mode (++auto 1|2)
-   - Characters received over the GPIB bus are unbuffered and sent directly to USB
-   NOTES:
-   - GPIB line in a HIGH state is un-asserted
-   - GPIB line in a LOW state is asserted
-   - The ATMega processor control pins have a high impedance when set as inputs
-   - When set to INPUT_PULLUP, a 10k pull-up (to VCC) resistor is applied to the input
-*/
-
-
-/*
-   NOT YET IMPLEMENTED
-   ++myaddr   - set the controller address
-*/
-
-
-/*
-   For information regarding the GPIB firmware by Emanualle Girlando see:
-   http://egirland.blogspot.com/2014/03/arduino-uno-as-usb-to-gpib-controller.html
-*/
-
-
-/*
-   Pin mapping between the Arduino pins and the GPIB connector.
-   NOTE:
-   GPIB pins 10 and 18-24 are connected to GND
-   GPIB pin 12 should be connected to the cable shield (might be n/c)
-   Pin mapping follows the layout originally used by Emanuelle Girlando, but adds
-   the SRQ line (GPIB 10) on pin 2 and the REN line (GPIB 17) on pin 13. The program
-   should therefore be compatible with the original interface design but for full
-   functionality will need the remaining two pins to be connected.
-   For further information about the AR488 see the AR488 Manual. 
-*/
-
-
-/*************************************/
-/***** MACRO STRUCTRURES SECTION *****/
-/***** vvvvvvvvvvvvvvvvvvvvvvvvv *****/
-#ifdef USE_MACROS
-
-/*** DO NOT MODIFY ***/
-/*** vvvvvvvvvvvvv ***/
-
-/***** STARTUP MACRO *****/
-const char startup_macro[] PROGMEM = {MACRO_0};
-
-/***** Consts holding USER MACROS 1 - 9 *****/
-const char macro_1 [] PROGMEM = {MACRO_1};
-const char macro_2 [] PROGMEM = {MACRO_2};
-const char macro_3 [] PROGMEM = {MACRO_3};
-const char macro_4 [] PROGMEM = {MACRO_4};
-const char macro_5 [] PROGMEM = {MACRO_5};
-const char macro_6 [] PROGMEM = {MACRO_6};
-const char macro_7 [] PROGMEM = {MACRO_7};
-const char macro_8 [] PROGMEM = {MACRO_8};
-const char macro_9 [] PROGMEM = {MACRO_9};
-
-
-/* Macro pointer array */
-const char * const macros[] PROGMEM = {
-  startup_macro,
-  macro_1,
-  macro_2,
-  macro_3,
-  macro_4,
-  macro_5,
-  macro_6,
-  macro_7,
-  macro_8,
-  macro_9
-};
-
-/*** ^^^^^^^^^^^^^ ***/
-/*** DO NOT MODIFY ***/
-
-#endif
-/***** ^^^^^^^^^^^^^^^^^^^^ *****/
-/***** MACRO CONFIG SECTION *****/
-/********************************/
-
-
+#include "user_interface.h"
 
 /*******************************/
 /***** SERIAL PARSE BUFFER *****/
 /***** vvvvvvvvvvvvvvvvvvv *****/
 /*
- * Note: Ardiono serial input buffer is 64 
+ * Note: Arduino serial input buffer is 64 
  */
 // Serial input parsing buffer
 static const uint8_t PBSIZE = 128;
@@ -269,185 +165,117 @@ uint8_t runMacro = 0;
 // Send response to *idn?
 bool sendIdn = false;
 
+#pragma region Socket servers
 
-/***** ^^^^^^^^^^^^^^^^^^^^^^^^ *****/
-/***** COMMON VARIABLES SECTION *****/
-/************************************/
+#define NUM_DEVICES 4
+#define BASE_PORT 5025
+EthernetStream *ethernetPorts[NUM_DEVICES];
 
+// forward declarations
+void setup_ethernet(byte* mac, IPAddress ip) {
+  // Initialise the ethernet ports
+  for (int i = 0; i < NUM_DEVICES; i++) {
+    ethernetPorts[i] = new EthernetStream(mac, ip, BASE_PORT + i);
+    ethernetPorts[i]->begin();    
+  }
+}
 
+void loop_ethernet(void) {
 
-/*******************************/
-/***** COMMON CODE SECTION *****/
-/***** vvvvvvvvvvvvvvvvvvv *****/
+  EthernetStream *myserver;
+  for (int i = 0; i < NUM_DEVICES; i++) {
+    myserver = ethernetPorts[i];
+    myserver->maintain();
+    if (myserver->available()) {
+      char c = myserver->read();
+      myserver->write(c); // Echo back the received character
+    }
+  }
+}
 
+#pragma endregion
 
+#pragma region Setup and loop functions
 
-/******  Arduino standard SETUP procedure *****/
+/**
+ * @brief Setup function
+ * 
+ * This function is called once at startup. It initializes the LED, serial port, and Ethernet connection.
+ * It also sets up the EEPROM and GPIB bus configuration. The function tries to wait for DHCP to assign an IP address.
+ */
 void setup() {
-  pinMode(LED_R, OUTPUT);
-  pinMode(LED_G, OUTPUT);
-  pinMode(LED_B, OUTPUT);
-  digitalWrite(LED_R, HIGH);
-  digitalWrite(LED_G, HIGH);
-  digitalWrite(LED_B, HIGH);
-#ifdef DEBUG_ENABLE
-  // Initialise debug port
-
-  startDebugPort();
-  debugPort.println(F("Starting"));
-  display_freeram();
-#endif  
+  setup_led();
+  setup_serial(F("Starting RAW socket server GPIB interface..."));
 
   // Disable the watchdog (needed to prevent WDT reset loop)
 #ifdef __AVR__
   wdt_disable();
 #endif
 
-#ifdef REMOTE_SIGNAL_PIN
-  pinMode(REMOTE_SIGNAL_PIN, OUTPUT);
-  digitalWrite(REMOTE_SIGNAL_PIN, LOW);
-#endif
-  //Debug I2C
   eeprom.begin();
   uint8_t macAddress[6];
   eeprom.getMACAddress(macAddress);
 
-#ifdef DEBUG_ENABLE
   debugPort.print(F("MAC Address: "));
   printHexArray(macAddress, 6);
   debugPort.println(F("Waiting for DHCP..."));
-#endif    
 
-  IPAddress ip = (0,0,0,0);
   // Initialise parse buffer
   flushPbuf();
 
   // Initialise dataport, serial or ethernet as defined
-  startDataPort(macAddress, ip);
-
+  IPAddress ip = (0,0,0,0);
+  char buffer[100];
+  sprintf_P(buffer, PSTR("Starting %d TCP servers, from port %d to %d..."), NUM_DEVICES, BASE_PORT, BASE_PORT + NUM_DEVICES - 1);
+  debugPort.println(buffer);
+  setup_ethernet(macAddress, ip);
+  debugPort.println(F("TCP servers started"));
+  
+  // The following section is not needed if you do not use EEPROM to store gpibBus.cfg between startups.
 #ifdef E2END
-//  DB_RAW_PRINTLN(F("EEPROM detected!"));
+  // debugPort.println(F("EEPROM detected"));
   // Read data from non-volatile memory
   //(will only read if previous config has already been saved)
   if (!isEepromClear()) {
-//DB_RAW_PRINTLN(F("EEPROM has data."));
+    debugPort.println(F("EEPROM has data, restoring gpib bus config from EEPROM."));
     if (!epReadData(gpibBus.cfg.db, GPIB_CFG_SIZE)) {
       // CRC check failed - config data does not match EEPROM
-//DB_RAW_PRINTLN(F("CRC check failed. Erasing EEPROM...."));
+      debugPort.println(F("CRC check failed. Erasing EEPROM...."));
       epErase();
       gpibBus.setDefaultCfg();
 //      initAR488();
       epWriteData(gpibBus.cfg.db, GPIB_CFG_SIZE);
-//DB_RAW_PRINTLN(F("EEPROM data set to default."));
+      debugPort.println(F("EEPROM data set to default."));
     }
   }
 #endif
 
   // Start the interface in the configured mode
+  debugPort.println(F("Starting GPIB bus..."));
   gpibBus.begin();
 
-#if defined(USE_MACROS) && defined(RUN_STARTUP)
-  // Run startup macro
-  execMacro(0);
-#endif
-
-#ifdef SAY_HELLO
-  dataPort->print(F("AR488 ready "));
-  if (gpibBus.isController()){
-    dataPort->println(F("(controller)."));
-  }else{
-    dataPort->println(F("(device)."));
-  }
-#endif
-
-#ifdef DEBUG_ENABLE
   debugPort.print(F("IP Address: "));
   debugPort.println(Ethernet.localIP());
-  debugPort.println(F("Starting now"));
-#endif   
 
-}
-/****** End of Arduino standard SETUP procedure *****/
-
-
-uint32_t pulseR = 0;  
-uint32_t pulseG = 0; 
-uint32_t pulseB = 0; 
-void LEDPulse(void)
-{
-    // Increment phases
-    pulseR += 248; 
-    pulseG += 420; 
-    pulseB += 690; 
-
-    // Calculate brightness for each LED using triangle wave logic
-    uint16_t brightnessR = calculateBrightness(pulseR);
-    uint16_t brightnessG = calculateBrightness(pulseG);
-    uint16_t brightnessB = calculateBrightness(pulseB);
-
-    // Set LEDs based on calculated brightness
-    analogWrite(LED_R, brightnessR >> 8); // Scale down to 8-bit value
-    analogWrite(LED_G, brightnessG >> 8); // Scale down to 8-bit value
-    analogWrite(LED_B, brightnessB >> 8); // Scale down to 8-bit value
-}
-
-uint16_t calculateBrightness(uint32_t phase)
-{
-    uint16_t p = phase >> 10; 
-    if (p > 32768)
-        p = 65535 - p; 
-    return p + p; 
-}
-
-void display_freeram() {
-#ifdef DEBUG_ENABLE  
-  debugPort.print(F("- SRAM left: "));
-  debugPort.println(freeRam());
-#endif
-}
-
-int freeRam() {
-  /* for AVR, not ARM */
-  extern int __heap_start,*__brkval;
-  int v;
-  return (int)&v - (__brkval == 0  
-    ? (int)&__heap_start : (int) __brkval);  
-}
-
-void onceASecond()
-{
-	static const unsigned long REFRESH_INTERVAL = 1000; // ms
-	static unsigned long lastRefreshTime = 0;
-	
-	if(millis() - lastRefreshTime >= REFRESH_INTERVAL)
-	{
-		lastRefreshTime += REFRESH_INTERVAL;
-    display_freeram();
-	}
+  end_of_setup();
 }
 
 
 /***** ARDUINO MAIN LOOP *****/
+
+/**
+ * @brief This is the main loop.
+ */
 void loop() {
 
+  loop_led();
+  loop_serial();
+  loop_ethernet();
+}
 
-  LEDPulse();
-  onceASecond();
-
+void bla() {
   bool errFlg = false; 
   maintainDataPort();  // Maintain the data port connection
-/*** Macros ***/
-/*
- * Run the startup macro if enabled
- */
-#ifdef USE_MACROS
-  // Run user macro if flagged
-  if (runMacro > 0) {
-    execMacro(runMacro);
-    runMacro = 0;
-  }
-#endif
-
 
 /*** Process the buffer ***/
 /* Each received char is passed through parser until an un-escaped 
@@ -564,6 +392,8 @@ if (lnRdy>0){
   //delayMicroseconds(5); // Don't like delays that I do not know the purpose of.
 }
 /***** END MAIN LOOP *****/
+
+#pragma endregion
 
 
 /***** Initialise the interface *****/
@@ -2772,4 +2602,4 @@ void tonMode(){
 
 }
 
-#endif // INTERFACE_PROLOGIX
+#endif // INTERFACE_RAW

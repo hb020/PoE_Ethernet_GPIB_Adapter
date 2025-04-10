@@ -3,35 +3,9 @@
 
 #include <Arduino.h>
 #include "AR488_Config.h"
+#include <DEVNULL.h>
 
 /***** AR488_ComPorts.cpp, ver. 0.51.18, 26/02/2023 *****/
-
-
-/***** DEVNULL Library *****
- *  AUTHOR: Rob Tillaart
- *  VERSION: 0.1.5
- *  PURPOSE: Arduino library for a /dev/null stream - useful for testing
- *  URL: https://github.com/RobTillaart/DEVNULL
- */
-
-class DEVNULL : public Stream
-{
-public:
-  DEVNULL();
-
-  int    available();
-  int    peek();
-  int    read();
-  void   flush();  //  placeholder to keep CI happy
-
-  size_t write(const uint8_t data);
-  size_t write( const uint8_t *buffer, size_t size);
-
-  int    lastByte();
-
-private:
-  uint8_t  _bottomLessPit;
-};
 
 
 /*
@@ -88,6 +62,7 @@ void maintainDataPort();  //
     dataPort->println(msg2);
   }
 
+  void printBuf(const char *data, size_t len);
   void printHex(uint8_t byteval);
   void printHexArray(uint8_t barray[], size_t asize);
   void printHexBuf(char * buf, size_t bsize);

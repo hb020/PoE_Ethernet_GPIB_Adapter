@@ -31,17 +31,11 @@
 */
 #ifdef AR488_CUSTOM
   /* Board layout */
-  /*
-   * Define board layout in the AR488 CUSTOM LAYOUT
-   * section below
-   */
-    #define LED_R 13
-    #define LED_G 39
-    #define LED_B 38
-  /* Default serial port type */
-  //#define AR_SERIAL_TYPE_HW
-  #define AR_ETHERNET_PORT
-//#define DEBUG_ENABLE
+#define LED_R 13
+#define LED_G 39
+#define LED_B 38
+#define AR_ETHERNET_PORT
+#define DEBUG_ENABLE
 /*** UNO and NANO boards ***/
 #elif __AVR_ATmega328P__
 /* Board/layout selection */

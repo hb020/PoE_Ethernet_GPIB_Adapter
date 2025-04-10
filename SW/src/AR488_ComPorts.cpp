@@ -1,61 +1,8 @@
 #include <Arduino.h>
 #include "AR488_ComPorts.h"
 #include "24AA256UID.h"
+#include <DEVNULL.h>
 /***** AR488_ComPorts.cpp, ver. 0.51.18, 26/02/2023 *****/
-
-
-/***** DEVNULL Library *****
- *  AUTHOR: Rob Tillaart
- *  VERSION: 0.1.5
- *  PURPOSE: Arduino library for a /dev/null stream - useful for testing
- *  URL: https://github.com/RobTillaart/DEVNULL
- */
-
-DEVNULL::DEVNULL()
-{
-  setTimeout(0);        //  no timeout.
-  _bottomLessPit = -1;  //  nothing in the pit
-}
-
-int  DEVNULL::available()
-{
-  return 0;
-};
-
-int  DEVNULL::peek()
-{
-  return EOF;
-};
-
-int  DEVNULL::read()
-{
-  return EOF;
-};
-
-//  placeholder to keep CI happy
-void DEVNULL::flush()
-{
-  return;
-};
-
-size_t DEVNULL::write(const uint8_t data)
-{
-  _bottomLessPit = data;
-  return 1;
-}
-
-size_t DEVNULL::write( const uint8_t *buffer, size_t size)
-{
-  if (size > 0) _bottomLessPit = buffer[size - 1];
-  return size;
-}
-
-int DEVNULL::lastByte()
-{
-  return _bottomLessPit;
-}
-
-
 
 /***************************************/
 /***** Serial Port implementations *****/
@@ -71,10 +18,10 @@ int DEVNULL::lastByte()
 #ifdef AR_ETHERNET_PORT
   #include "AR488_EthernetStream.h"
   EthernetStream* ethernetPort = nullptr;
-  #else
+#else
   #ifdef AR_SOFTWARE_SERIAL
-  #include <SoftwareSerial.h>
-  SoftwareSerial swSerial(SW_SERIAL_RX_PIN, SW_SERIAL_TX_PIN);
+    #include <SoftwareSerial.h>
+    SoftwareSerial swSerial(SW_SERIAL_RX_PIN, SW_SERIAL_TX_PIN);
   #endif
 #endif
 
@@ -142,6 +89,15 @@ void maintainDataPort() {
     }
 
   #endif
+
+  void printBuf(const char *data, size_t len) {
+    debugPort.print("\"");
+    for (size_t i = 0; i < len; i++) {
+      debugPort.print(data[i]);
+    }
+    debugPort.print("\"");
+    debugPort.println();
+  }
 
   void printHex(uint8_t byteval) {
     char x[4] = {'\0'};
