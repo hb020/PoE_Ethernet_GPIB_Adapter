@@ -1,6 +1,10 @@
 
 # PoE Ethernet GPIB Adapter
 
+STATUS OF THIS FORK: WIP
+
+GOAL OF THIS FORK: add pyvisa compatibility, be it RAW or VXI-11.2
+
 ## PoE-powered GPIB Adapter with Ethernet and USB-C Support
 
 <a href="Img/adapter_connected.png" target="_blank">
