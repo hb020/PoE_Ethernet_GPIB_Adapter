@@ -168,31 +168,33 @@ void flushPbuf(void);
 
 // #define DUMMY_DEVICE
 
-class bufStream: public Stream {
-    public:
-      bufStream(char *buf, size_t size) : buffer(buf), bufferSize(size) {}
-  
-      size_t write(uint8_t ch) override{
-          if (buffer_pos < bufferSize) {
-              buffer[buffer_pos++] = ch;
-              return 1;
-          }
-          return 0;
-      }
+class bufStream : public Stream {
+   public:
+    bufStream(char *buf, size_t size) : buffer(buf), bufferSize(size) {}
 
-      int available() { return 0; } // dummy
-      int read() { return 0; } // dummy
-      int peek() { return 0; } // dummy
-      
-      size_t len(void) { return buffer_pos; }
+    size_t write(uint8_t ch) override {
+        // debugPort.print((char)ch);
+        if (buffer_pos < bufferSize) {
+            buffer[buffer_pos++] = ch;
+            return 1;
+        }
+        return 0;
+    }
 
-      void flush() {
-        buffer_pos = 0; // clear the buffer
-      }
-    private:
-      char *buffer;
-      size_t bufferSize;
-      size_t buffer_pos = 0;
+    int available() { return 0; }  // dummy
+    int read() { return 0; }       // dummy
+    int peek() { return 0; }       // dummy
+
+    size_t len(void) { return buffer_pos; }
+
+    void flush() {
+        buffer_pos = 0;  // clear the buffer
+    }
+
+   private:
+    char *buffer;
+    size_t bufferSize;
+    size_t buffer_pos = 0;
 };
 
 /**
@@ -228,11 +230,10 @@ class SCPI_handler : public SCPI_handler_interface {
         bufStream buf = bufStream(data, max_len);  ///< Buffer stream for incoming data
 
         gpibBus.cfg.paddr = address;
-        gpibBus.addressDevice(gpibBus.cfg.paddr, TALK);  // tel device 'paddr' to talk. If you do this and the device has nothing to say, you might get an error.
-
-        gpibBus.receiveData(buf, readWithEoi, readWithEndByte, endByte); // get the data from the bus and send out
+        gpibBus.addressDevice(gpibBus.cfg.paddr, TALK);     // tel device 'paddr' to talk. If you do this and the device has nothing to say, you might get an error.
+        gpibBus.receiveData(buf, readWithEoi, true, '\n');  // get the data from the bus and send out
         *len = buf.len();
-        return true;        
+        return true;
 #endif
     }
 
@@ -245,7 +246,6 @@ class SCPI_handler : public SCPI_handler_interface {
     }
 
    private:
-
 };
 
 #pragma endregion

@@ -93,10 +93,23 @@ void maintainDataPort() {
   void printBuf(const char *data, size_t len) {
     debugPort.print("\"");
     for (size_t i = 0; i < len; i++) {
-      debugPort.print(data[i]);
+      char ch = data[i];
+      if (ch == '\n') {
+        debugPort.print("\\n");
+      } else if (ch == '\r') {
+        debugPort.print("\\r");
+      } else if (ch == '\t') {
+        debugPort.print("\\t");
+      } else if (ch < 0x20 || ch > 0x7E) {
+        debugPort.print("\\x");
+        debugPort.print(ch, HEX);
+      } else {
+        debugPort.print(ch);
+      }
     }
-    debugPort.print("\"");
-    debugPort.println();
+    debugPort.print("\" (length: ");
+    debugPort.print(len);
+    debugPort.print(")\n");
   }
 
   void printHex(uint8_t byteval) {
