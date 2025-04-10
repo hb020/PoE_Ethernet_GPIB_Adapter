@@ -16,6 +16,7 @@
 
 #include "24AA256UID.h"
 #include "AR488_EthernetStream.h"
+#include "user_interface.h"
 
 /***** FWVER "AR488 GPIB controller, ver. 0.51.29, 18/03/2024" *****/
 
@@ -293,9 +294,8 @@ void setup() {
 #ifdef DEBUG_ENABLE
   // Initialise debug port
 
-  startDebugPort();
-  debugPort.println(F("Starting"));
-  display_freeram();
+  setup_serial(F("Starting Prologix socket server GPIB interface..."));
+
 #endif  
 
   // Disable the watchdog (needed to prevent WDT reset loop)
@@ -399,40 +399,13 @@ uint16_t calculateBrightness(uint32_t phase)
     return p + p; 
 }
 
-void display_freeram() {
-#ifdef DEBUG_ENABLE  
-  debugPort.print(F("- SRAM left: "));
-  debugPort.println(freeRam());
-#endif
-}
-
-int freeRam() {
-  /* for AVR, not ARM */
-  extern int __heap_start,*__brkval;
-  int v;
-  return (int)&v - (__brkval == 0  
-    ? (int)&__heap_start : (int) __brkval);  
-}
-
-void onceASecond()
-{
-	static const unsigned long REFRESH_INTERVAL = 1000; // ms
-	static unsigned long lastRefreshTime = 0;
-	
-	if(millis() - lastRefreshTime >= REFRESH_INTERVAL)
-	{
-		lastRefreshTime += REFRESH_INTERVAL;
-    display_freeram();
-	}
-}
-
 
 /***** ARDUINO MAIN LOOP *****/
 void loop() {
 
 
   LEDPulse();
-  onceASecond();
+  loop_serial(NULL, 0);
 
   bool errFlg = false; 
   maintainDataPort();  // Maintain the data port connection
@@ -1305,6 +1278,7 @@ void read_h(char *params) {
   } else {
     // If auto mode is disabled we do a single read
     gpibBus.addressDevice(gpibBus.cfg.paddr, TALK);
+    debugPort.printf("receiveData(*dataPort, %u, %u, %u)", readWithEoi, readWithEndByte, endByte);
     gpibBus.receiveData(*dataPort, readWithEoi, readWithEndByte, endByte);
   }
 }
