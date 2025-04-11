@@ -1,11 +1,13 @@
 #ifndef USER_INTERFACE_H
 #define USER_INTERFACE_H
 
-void setup_led();
-void loop_led();
+bool setup_ipaddress_surveillance_and_show_address(void);
 
-void setup_serial(const __FlashStringHelper* helloStr);
-void loop_serial(bool *pBusy, size_t num_servers);
+// void setup_led(void);
+// void loop_led(void);
+
+void setup_serial_ui_and_led(const __FlashStringHelper* helloStr);
+void loop_serial_ui_and_led(bool *pBusy, size_t num_servers);
 
 void end_of_setup();
 

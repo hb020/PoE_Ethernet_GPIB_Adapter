@@ -1,4 +1,5 @@
 #include <Arduino.h>
+#include <Ethernet.h>
 #include "AR488_Config.h"
 #include "AR488_ComPorts.h"
 #include "user_interface.h"
@@ -7,54 +8,153 @@
 #error "DEBUG_ENABLE must be defined"
 #endif
 
+#pragma region IP ADDRESS
+
+static IPAddress _previous_address(0, 0, 0, 0);
+static bool ip_address_is_wrong = false;
+
+// forward declarations
+bool is_valid_IP_assigned(IPAddress current_address);
+void LEDRed(void);
+
+/**
+ * @brief Set the up ipaddress surveillance
+ * 
+ * @return true if address is valid
+ */
+bool setup_ipaddress_surveillance_and_show_address(void) {
+    _previous_address = Ethernet.localIP();
+    debugPort.print(F("IP Address: "));
+    debugPort.println(_previous_address);
+    if (!is_valid_IP_assigned(_previous_address)) {
+        debugPort.println(F("!! No valid IP address assigned. Please check your network settings."));
+        ip_address_is_wrong = true;
+        LEDRed();
+        return false;
+    }
+    return true;
+}
+
+bool has_address_changed_since_start(void) {
+    IPAddress current_address = Ethernet.localIP();
+    if (current_address != _previous_address) {
+        // previous_address = current_address;        
+        ip_address_is_wrong = true;
+        return true;
+    }
+    return false;
+}
+
+bool is_valid_IP_assigned(IPAddress current_address) {
+    // TODO should also look at those MS style 'local addresses', but don't know if Arduino has that.
+    return (current_address[0] != 0 || current_address[1] != 0 || current_address[2] != 0 || current_address[3] != 0);
+}
+
+#pragma endregion
+
 #pragma region LEDS
 
-void setup_led() {
-    pinMode(LED_R, OUTPUT);
-    pinMode(LED_G, OUTPUT);
-    pinMode(LED_B, OUTPUT);
-    digitalWrite(LED_R, HIGH);
+uint8_t calculateBrightness(uint16_t count, uint16_t scale) {
+    // Scale the count to fit within the range of 0-256 in a triangular way
+    // so must get 0-511 first
+    uint32_t p = (count * 512L) / scale;
+    if (p > 511) {
+        p = 0;
+    }
+    if (p > 255) {
+        p = 511 - p;
+    }
+    return (uint8_t)p;
+}
+
+void LEDPulse(bool pulse_r = true, bool pulse_g = true, bool pulse_b = true) {
+    // This configuration is based on different speeds. 
+    // You can also use same speed but different phases
+    unsigned long currentMillis = millis();
+    uint16_t scale;
+    uint16_t offset = 0;
+    if (pulse_r) {
+        scale = 5000; // 5 secs cycle
+        uint16_t brightnessR = calculateBrightness((currentMillis + offset)%scale, scale); // Calculate brightness
+        analogWrite(LED_R, brightnessR);
+    }
+    if (pulse_g) {
+        scale = 4000; // 4 secs cycle
+        uint16_t brightnessG = calculateBrightness((currentMillis + offset)%scale, scale); // Calculate brightness
+        analogWrite(LED_G, brightnessG);
+    }
+    if (pulse_b) {
+        scale = 1000; // 1 secs cycle
+        uint16_t brightnessB = calculateBrightness((currentMillis + offset)%scale, scale); // Calculate brightness
+        analogWrite(LED_B, brightnessB);
+    }
+}
+
+void LEDOff(bool set_r = true, bool set_g = true, bool set_b = true) {
+    if (set_r) {
+        digitalWrite(LED_R, HIGH);
+    }
+    if (set_g) {
+        digitalWrite(LED_G, HIGH);
+    }
+    if (set_b) {
+        digitalWrite(LED_B, HIGH);
+    }
+}
+void LEDOn(void) {
+    digitalWrite(LED_R, LOW);
+    digitalWrite(LED_G, LOW);
+    digitalWrite(LED_B, LOW);
+}
+void LEDRed(void) {
+    digitalWrite(LED_R, LOW);
     digitalWrite(LED_G, HIGH);
     digitalWrite(LED_B, HIGH);
 }
-
-uint16_t calculateBrightness(uint32_t phase) {
-    uint16_t p = phase >> 10;
-    if (p > 32768)
-        p = 65535 - p;
-    return p + p;
+void LEDGreen(bool set_r = true, bool set_b = true) {
+    if (set_r) {
+        digitalWrite(LED_R, HIGH);
+    }
+    digitalWrite(LED_G, LOW);
+    if (set_b) {
+        digitalWrite(LED_B, HIGH);
+    }
+}
+void LEDBlue(void) {
+    digitalWrite(LED_R, HIGH);
+    digitalWrite(LED_G, HIGH);
+    digitalWrite(LED_B, LOW);
 }
 
-uint32_t pulseR = 0;
-uint32_t pulseG = 0;
-uint32_t pulseB = 0;
-void LEDPulse(void) {
-    // Increment phases
-    pulseR += 248;
-    pulseG += 420;
-    pulseB += 690;
-
-    // Calculate brightness for each LED using triangle wave logic
-    uint16_t brightnessR = calculateBrightness(pulseR);
-    uint16_t brightnessG = calculateBrightness(pulseG);
-    uint16_t brightnessB = calculateBrightness(pulseB);
-
-    // Set LEDs based on calculated brightness
-    analogWrite(LED_R, brightnessR >> 8);  // Scale down to 8-bit value
-    analogWrite(LED_G, brightnessG >> 8);  // Scale down to 8-bit value
-    analogWrite(LED_B, brightnessB >> 8);  // Scale down to 8-bit value
+void setup_led(void) {
+    pinMode(LED_R, OUTPUT);
+    pinMode(LED_G, OUTPUT);
+    pinMode(LED_B, OUTPUT);
+    LEDBlue();
 }
 
-// TODO: use connection status for led color
-void loop_led() {
-    LEDPulse();
+void loop_led(bool has_clients) {
+    if (ip_address_is_wrong) {
+        LEDRed();
+    } else {
+        if (has_clients) {
+            // green on, pulse blue
+            LEDGreen(true, false);
+            LEDPulse(false, false, true);
+        } else {
+            // all off, pulse green
+            LEDOff(true, false, true);
+            LEDPulse(false, true, false);
+        }
+    }
+
 }
 
 #pragma endregion
 
 #pragma region SERIAL
 
-int freeRam() {
+int freeRam(void) {
     /* for AVR, not ARM */
     extern int __heap_start, *__brkval;
     int v;
@@ -63,7 +163,7 @@ int freeRam() {
                           : (int)__brkval);
 }
 
-void display_freeram() {
+void display_freeram(void) {
     debugPort.print(F("- SRAM left: "));
     debugPort.print(freeRam());
 }
@@ -86,39 +186,96 @@ bool onceASecond(bool start = false) {
     }
 }
 
-void setup_serial(const __FlashStringHelper* helloStr) {
+void setup_serial_ui_and_led(const __FlashStringHelper* helloStr) {
+    setup_led();
     startDebugPort();
     debugPort.println(helloStr);
     display_freeram();
     debugPort.println("");
 }
 
+int counter = 0;
 /**
  * @brief print debug information
  * 
  * @param pBusy pointer to busy flag of each of the servers
  * @param num_servers number of servers
  */
-void loop_serial(bool *pBusy, size_t num_servers) {
+void loop_serial_ui_and_led(bool *pBusy, size_t num_servers) {
     if (debugPort.available()) {
         char c = Serial.read();
         debugPort.print(F("Received: "));
         debugPort.println(c);
     }
+
+    bool have_clients = false;
+    for (int i = 0; i < num_servers; i++) {
+        if (pBusy[i]) {
+            have_clients = true;
+            break;
+        }
+    }
+    loop_led(have_clients);
+
     if (onceASecond(false)) {
+        if (ip_address_is_wrong) {
+            debugPort.print(F("IP Address "));
+            debugPort.print(Ethernet.localIP());
+            debugPort.println(F(" is wrong. Please reboot!"));
+            LEDRed();
+        } else if (has_address_changed_since_start()) {
+            debugPort.print(F("!! IP Address changed: "));
+            debugPort.print(Ethernet.localIP());
+            debugPort.println(F("  Please reboot!"));
+            LEDRed();
+        }
         display_freeram();
-        debugPort.print(F(", Servers: "));
+        debugPort.print(F(", VXI-11 Servers in use: "));
         for (int i = 0; i < num_servers; i++) {
             debugPort.print(pBusy[i]);
             debugPort.print(" ");
         }
         debugPort.println();
+        /*
+        // LED test
+        counter++;
+        switch (counter/2){
+            case 0:
+                LEDRed();
+                debugPort.println(F("Red"));
+                break;
+            case 1:
+                LEDGreen();
+                debugPort.println(F("Green"));
+                break;
+            case 2:
+                LEDBlue();
+                debugPort.println(F("Blue"));
+                break;
+            case 3:
+                LEDOff();
+                debugPort.println(F("Off"));
+                break;
+            case 4:
+                LEDOn();
+                debugPort.println(F("On"));
+                break;
+            default:
+                counter = 0;
+                break;
+        }
+        */
     }
 }
 
-void end_of_setup() {
+void end_of_setup(void) {
     debugPort.println(F("Setup complete."));
     onceASecond(true);
+    if (ip_address_is_wrong) {
+        LEDRed();
+    } else {
+        LEDGreen();
+    }
 }
 
 #pragma endregion
