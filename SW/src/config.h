@@ -7,3 +7,5 @@
   
   #define VXI11_PORT 5026
   #define MAX_VXI_CLIENTS 30
+
+  #define DEVICE_NAME "Ethernet2GPIB Gateway v1.1\n"

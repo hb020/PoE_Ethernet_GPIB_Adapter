@@ -131,7 +131,7 @@ class SCPI_handler : public SCPI_handler_interface {
 #else
         // dummy reply if I am addressed
         if (address == 0) {
-            strncpy(data, "Ethernet to GPIB device\n", max_len);
+            strncpy(data, DEVICE_NAME, max_len);
             *len = strlen(data);
             return true;  // no address
         }
@@ -209,8 +209,10 @@ void setup() {
     setup_ipaddress_surveillance_and_show_address();
     // for now, just ignore if we have a good address
 
+    // This would be the place to add mdns, but none of the main mdns libraries support the present ethernet library
+
     debugPort.println(F("Starting TCP server..."));
-    vxi_server.begin(5025, LOG_DETAILS);
+    vxi_server.begin(VXI11_PORT, LOG_DETAILS);
 
     debugPort.println(F("Starting port mappers on TCP and UDP..."));
     rpc_bind_server.begin(LOG_DETAILS);
