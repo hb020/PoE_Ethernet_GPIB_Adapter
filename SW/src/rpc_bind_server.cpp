@@ -45,7 +45,7 @@ void RPC_Bind_Server::loop()
         a vxi_server becomes available.
     */
 
-    if (vxi_server.available()) {
+    if (vxi_server.have_free_connections()) {
         
         int len;
 
@@ -66,6 +66,7 @@ void RPC_Bind_Server::loop()
                     process_request(false);
                     send_bind_packet(tcp_client, sizeof(bind_response_packet));
                 }
+                tcp_client.stop(); // close the connection
             }
         }
     }

@@ -1,6 +1,6 @@
 #include <Arduino.h>
 #include <Ethernet.h>
-#include "AR488_Config.h"
+#include "config.h"
 #include "AR488_ComPorts.h"
 #include "user_interface.h"
 
@@ -196,26 +196,18 @@ void setup_serial_ui_and_led(const __FlashStringHelper* helloStr) {
 
 int counter = 0;
 /**
- * @brief print debug information
+ * @brief print debug information on the console
  * 
- * @param pBusy pointer to busy flag of each of the servers
- * @param num_servers number of servers
+ * @param nrConnections number of clients connected
  */
-void loop_serial_ui_and_led(bool *pBusy, size_t num_servers) {
+void loop_serial_ui_and_led(int nrConnections) {
     if (debugPort.available()) {
         char c = Serial.read();
         debugPort.print(F("Received: "));
         debugPort.println(c);
     }
 
-    bool have_clients = false;
-    for (int i = 0; i < num_servers; i++) {
-        if (pBusy[i]) {
-            have_clients = true;
-            break;
-        }
-    }
-    loop_led(have_clients);
+    loop_led(nrConnections > 0);
 
     if (onceASecond(false)) {
         if (ip_address_is_wrong) {
@@ -230,11 +222,8 @@ void loop_serial_ui_and_led(bool *pBusy, size_t num_servers) {
             LEDRed();
         }
         display_freeram();
-        debugPort.print(F(", VXI-11 Servers in use: "));
-        for (int i = 0; i < num_servers; i++) {
-            debugPort.print(pBusy[i]);
-            debugPort.print(" ");
-        }
+        debugPort.print(F(", VXI-11 clients: "));
+        debugPort.print(nrConnections);
         debugPort.println();
         /*
         // LED test

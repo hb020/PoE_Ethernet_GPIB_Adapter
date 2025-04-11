@@ -7,7 +7,7 @@ bool setup_ipaddress_surveillance_and_show_address(void);
 // void loop_led(void);
 
 void setup_serial_ui_and_led(const __FlashStringHelper* helloStr);
-void loop_serial_ui_and_led(bool *pBusy, size_t num_servers);
+void loop_serial_ui_and_led(int nrConnections);
 
 void end_of_setup();
 

@@ -13,16 +13,30 @@ VXI_Server::~VXI_Server()
 {
 }
 
-bool VXI_Server::available() {
-    if (client) return !client.connected();
-    return true;
-  }
+int VXI_Server::nr_connections(void) {
+    int count = 0;
+    for (int i = 0; i < MAX_VXI_CLIENTS; i++) {
+        if (clients[i]) {
+            count++;
+        }
+    }
+    return count;
+}
+
+bool VXI_Server::have_free_connections(void) {
+    for (int i = 0; i < MAX_VXI_CLIENTS; i++) {
+        if (!clients[i]) {
+            return true;
+        }
+    }
+    return false;
+}
 
 uint32_t VXI_Server::allocate()
 {
     uint32_t port = 0;
 
-    if (available()) {
+    if (have_free_connections()) {
         port = vxi_port; // This can be a cyclic counter, not a simple integer
     }
     return port;
@@ -32,14 +46,12 @@ uint32_t VXI_Server::allocate()
  * @brief Start the VXI server on the specified port.
  * 
  * @param port TCP port to listen on
- * @param address the device address in the GPIB bus to represent
  * @param debug true when debug messages are to be printed
  */
-void VXI_Server::begin(uint32_t port, int address, bool debug)
+void VXI_Server::begin(uint32_t port, bool debug)
 {
     this->vxi_port = port;
     this->debug = debug;
-    this->address = address;
 
     if (tcp_server) {
         delete tcp_server;
@@ -65,46 +77,74 @@ void VXI_Server::begin(uint32_t port, int address, bool debug)
 
 void VXI_Server::loop()
 {
-    if (client && !client.connected()) {
-        client.stop();
-        if (debug) {
-            debugPort.print(F("Force Closing VXI connection on port "));
-            debugPort.printf("%u\n", (uint32_t)vxi_port);
-        }        
+    // close any clients that are not connected
+    for (int i = 0; i < MAX_VXI_CLIENTS; i++) {
+        if (clients[i] && !clients[i].connected()) {
+            clients[i].stop();
+            if (debug) {
+                debugPort.print(F("Force Closing VXI connection on port "));
+                debugPort.print((uint32_t)vxi_port);
+                debugPort.print(F(" of slot "));
+                debugPort.print(i);
+                debugPort.println();
+            }               
+        }
     }
-    if (client) // if a connection has been established on port
-    {
-        bool bClose = false;
-        int len = get_vxi_packet(client);
 
-        if (len > 0) {
-            bClose = handle_packet();
-        }
-
-        if (bClose) {
-            if (debug) {
-                debugPort.print(F("Closing VXI connection on port "));
-                debugPort.printf("%u\n", (uint32_t)vxi_port);
+    // check if a new client is available
+    EthernetClient newClient = tcp_server->accept();
+    if (newClient) {
+        bool found = false;
+        for (int i = 0; i < MAX_VXI_CLIENTS; i++) {
+            if (!clients[i]) {
+                clients[i] = newClient;
+                found = true;
+                if (debug) {
+                    debugPort.print(F("New VXI connection on port "));
+                    debugPort.print((uint32_t)vxi_port);
+                    debugPort.print(F(" in slot "));
+                    debugPort.print(i);
+                    debugPort.println();
+                }
+                break;
             }
-            /*  this method will stop the client and the tcp_server, then potentially rotate
-                to the next port (within the specified range) and restart the
-                tcp_server to listen on that port.  */
-            client.stop();
         }
-    } else // i.e., if ! client 
-    {
-        client = tcp_server->accept(); // see if a client is available (data has been sent on port)
-
-        if (client) {
+        if (!found) {
             if (debug) {
-                debugPort.print(F("\nVXI connection established on port "));
-                debugPort.printf("%u\n", (uint32_t)vxi_port);
+                debugPort.print(F("VXI connection limit reached on port "));
+                debugPort.print((uint32_t)vxi_port);
+                debugPort.println();
+            }
+            newClient.stop();
+        }
+    }
+
+    // handle any incoming data
+    for (int i = 0; i < MAX_VXI_CLIENTS; i++) {
+        if (clients[i] && clients[i].available()) // if a connection has been established on port
+        {
+            bool bClose = false;
+            int len = get_vxi_packet(clients[i]);
+
+            if (len > 0) {
+                bClose = handle_packet(clients[i], i);
+            }
+
+            if (bClose) {
+                if (debug) {
+                    debugPort.print(F("Closing VXI connection on port "));
+                    debugPort.print((uint32_t)vxi_port);
+                    debugPort.print(F(" of slot "));
+                    debugPort.print(i);
+                    debugPort.println();
+                }
+                clients[i].stop();
             }
         }
     }
 }
 
-bool VXI_Server::handle_packet()
+bool VXI_Server::handle_packet(EthernetClient &client, int slot)
 {
     bool bClose = false;
     uint32_t rc = rpc::SUCCESS;
@@ -120,16 +160,16 @@ bool VXI_Server::handle_packet()
     } else
         switch (vxi_request->procedure) {
         case rpc::VXI_11_CREATE_LINK:
-            create_link();
+            create_link(client, slot);
             break;
         case rpc::VXI_11_DEV_READ:
-            read();
+            read(client, slot);
             break;
         case rpc::VXI_11_DEV_WRITE:
-            write();
+            write(client, slot);
             break;
         case rpc::VXI_11_DESTROY_LINK:
-            destroy_link();
+            destroy_link(client, slot);
             bClose = true;
             break;
         default:
@@ -156,7 +196,7 @@ bool VXI_Server::handle_packet()
     return bClose;
 }
 
-void VXI_Server::create_link()
+void VXI_Server::create_link(EthernetClient &client, int slot)
 {
     /*  The data field in a link request should contain a string
         with the name of the requesting device. It may already
@@ -178,22 +218,62 @@ void VXI_Server::create_link()
         debugPort.print(F("CREATE LINK request from \""));
         debugPort.print(create_request->data);
         debugPort.print(F("\" on port "));
-        debugPort.printf("%u\n", (uint32_t)vxi_port);
+        debugPort.print((uint32_t)vxi_port);
+        debugPort.print(F(" -> LID="));
+        debugPort.print(slot);
+        debugPort.println();
     }
+    // interpret and store the request data so that I can use it on the GPIB bus
+    // make lowercase
+    for(int i = 0; i < create_request->data_len; i++) {
+        create_request->data[i] = tolower(create_request->data[i]);
+    }
+    int my_nr = 0;
+    int r = sscanf(create_request->data, "inst%d", &my_nr);
+    // if not check (g|h)pib[0-9],[0-9] after the comma
+    if (r != 1 && ((create_request->data[0] == 'g' || create_request->data[0] == 'h') &&
+                    create_request->data[1] == 'p' && 
+                    create_request->data[2] == 'i' &&
+                    create_request->data[3] == 'b')) {
+        char *cptr;
+        for(int i = 4; i < create_request->data_len; i++) {
+            if (create_request->data[i] == ',') {
+                cptr = &create_request->data[i+1];
+                my_nr = atoi(cptr);
+                break;
+            }
+            create_request->data[i] = tolower(create_request->data[i]);
+        }
+    }  
+    if (my_nr < 0 || my_nr > 31) {
+        create_response->rpc_status = rpc::SUCCESS;
+        create_response->error = rpc::PARAMETER_ERROR;
+        create_response->link_id = 0;
+        create_response->abort_port = 0;
+        create_response->max_receive_size = 0;
+        send_vxi_packet(client, sizeof(create_response_packet));
+        return;
+    }
+    // store
+    addresses[slot] = my_nr;
+    
     /*  Generate the response  */
     create_response->rpc_status = rpc::SUCCESS;
     create_response->error = rpc::NO_ERROR;
-    create_response->link_id = 0;
+    create_response->link_id = slot;
     create_response->abort_port = 0;
     create_response->max_receive_size = VXI_READ_SIZE - 4;
     send_vxi_packet(client, sizeof(create_response_packet));
 }
 
-void VXI_Server::destroy_link()
+void VXI_Server::destroy_link(EthernetClient &client, int slot)
 {
     if (debug) {
-        debugPort.print(F("DESTROY LINK on port "));
-        debugPort.printf("%u\n", (uint32_t)vxi_port);
+        debugPort.print(F("DESTROY LINK LID="));
+        debugPort.print(slot);
+        debugPort.print(F(" on port "));
+        debugPort.print((uint32_t)vxi_port);
+        debugPort.println();        
     }
     destroy_response->rpc_status = rpc::SUCCESS;
     destroy_response->error = rpc::NO_ERROR;
@@ -201,18 +281,22 @@ void VXI_Server::destroy_link()
     scpi_handler.release_control();
 }
 
-void VXI_Server::read()
+void VXI_Server::read(EthernetClient &client, int slot)
 {
     // This is where we read from the device
     char outbuffer[256];
     size_t len = 0;
-    bool rv = scpi_handler.read(address, outbuffer, &len, sizeof(outbuffer));
+    bool rv = scpi_handler.read(addresses[slot], outbuffer, &len, sizeof(outbuffer));
 
     // FIXME handle error codes, maybe even pick up errors from the SCPI Parser
 
     if (debug) {
-        debugPort.print(F("READ DATA on port "));
+        debugPort.print(F("READ DATA LID="));
+        debugPort.print(slot);
+        debugPort.print(F(" on port "));
         debugPort.printf("%u", (uint32_t)vxi_port);
+        debugPort.print(F("; gpib_address="));
+        debugPort.print(addresses[slot]);
         debugPort.print(F("; data = "));
         printBuf(outbuffer, (int)len);
     }
@@ -225,7 +309,7 @@ void VXI_Server::read()
     send_vxi_packet(client, sizeof(read_response_packet) + len);
 }
 
-void VXI_Server::write()
+void VXI_Server::write(EthernetClient &client, int slot)
 {
     // This is where we write to the device
     uint32_t wlen = write_request->data_len;
@@ -236,13 +320,17 @@ void VXI_Server::write()
     }
     write_request->data[len] = 0;
     if (debug) {
-        debugPort.print(F("WRITE DATA on port "));
-        debugPort.printf("%u", (uint32_t)vxi_port);
+        debugPort.print(F("WRITE DATA LID="));
+        debugPort.print(slot);
+        debugPort.print(F(" on port "));
+        debugPort.print((uint32_t)vxi_port);
+        debugPort.print(F("; gpib_address="));
+        debugPort.print(addresses[slot]);        
         debugPort.print(F("; data = "));
         printBuf(write_request->data, (int)len);
     }
     /*  Parse and respond to the SCPI command  */
-    scpi_handler.write(address, write_request->data, len);
+    scpi_handler.write(addresses[slot], write_request->data, len);
 
     /*  Generate the response  */
     write_response->rpc_status = rpc::SUCCESS;

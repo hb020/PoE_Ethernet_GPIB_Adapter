@@ -8,12 +8,41 @@
 // that uses a String as output buffer (flushed upon \n). That could be improved and changed to a static buffer.
 // But main problem is the auto switching between LISTEN and TALK. VXI-11 is better for that, as it is explicit.
 
+// VXI-11.2
+
+// Example of connection string:
+
+// 'normal' vxi-11: TCPIP::192.168.1.105::INSTR           implies inst0, see below
+//                  TCPIP::192.168.1.105::instN::INSTR    
+//  VXI-11.2        TCPIP::192.168.1.105::gpibN,A::INSTR  (or hpibN) A is gpib bus primary address. 0 reserved for the controller
+// in all cases, N = interface number. Default is 0. When 0, it can be omitted
+//
+// VXI-11 Requires 3 servers:
+// * 2 port mappers on UDP and TCP that point to the VXI-11 RPC server
+// * 1 VXI-11 RPC server. VXI-11 consists of 3 separate RPC programs with the numeric identifiers: 0x0607AF (DEVICE_CORE), 0x0607B0 (DEVICE_ASYNC) and 0x0607B1 (DEVICE_INTR).
+// * you may also publish the service presence via mDNS, but this is not required.
+//
+// For compatibility with basic pyvisa use, you only need DEVICE_CORE, but the guidelines say you should also support the other RPC programs.
+//
+// While in theory one could re-use an existing VXI-11 RPC server socket for multiple connections, 
+// pyvisa requires 1 RPC client socket per device. It doesn't just use create_link on the same socket with a different device name.
+//
+// VXI-11 works this way:
+// * a request for an open port is sent to the port mapper (in UDP or TCP), which returns a port number.
+// * the client then connects to the RPC server on that port, with a CREATE_LINK request and device to connect to (inst0, gpib,2 etc). 
+// * the RPC server checks if there are resources available and if so, replies to the client with a link ID.
+// * the client then uses that port and link ID for DEVICE_WRITE and DEVICE_READ operations
+// * when done, the client sends a DESTROY_LINK command to the RPC server, which will close the link and closes the socket.
+//
+// The link ID is used to map with the device address
+
 #ifdef __AVR__
 #include <avr/wdt.h>
 #endif
 
 // #pragma GCC diagnostic pop
 
+#include "config.h"
 #include "AR488_Config.h"
 #include "AR488_GPIBbus.h"
 #include "AR488_ComPorts.h"
@@ -33,11 +62,13 @@ _24AA256UID eeprom(0x50, true);
 // GPIB bus object
 GPIBbus gpibBus;
 
-
 #pragma region SCPI handler
 
 // #define DUMMY_DEVICE
 
+/**
+ * @brief a helper class to capture data printed by receiveData (using Stream.write(uint8_t ch)) to an external buffer
+ */
 class bufStream : public Stream {
    public:
     bufStream(char *buf, size_t size) : buffer(buf), bufferSize(size) {}
@@ -70,8 +101,7 @@ class bufStream : public Stream {
 /**
  * @brief SCPI handler interface
  *
- * This class implements the SCPI handler interface for the VXI server.
- * It handles the communication between the VXI server and the SCPI parser or the devices.
+ * This class handles the communication between the VXI servers and the SCPI parser or the devices.
  */
 class SCPI_handler : public SCPI_handler_interface {
    public:
@@ -82,6 +112,8 @@ class SCPI_handler : public SCPI_handler_interface {
         debugPort.print(F("SCPI write: "));
         printBuf(data, len);
 #else
+        if (address == 0) return;
+
         // Send data to the GPIB bus
         gpibBus.cfg.paddr = address;
         if (!gpibBus.haveAddressedDevice()) gpibBus.addressDevice(gpibBus.cfg.paddr, LISTEN);
@@ -97,12 +129,18 @@ class SCPI_handler : public SCPI_handler_interface {
         *len = snprintf(data, max_len, "SCPI response");
         return true;
 #else
+        // dummy reply if I am addressed
+        if (address == 0) {
+            strncpy(data, "Ethernet to GPIB device\n", max_len);
+            *len = strlen(data);
+            return true;  // no address
+        }
         bufStream buf = bufStream(data, max_len);  ///< Buffer stream for incoming data
-        
+
         bool readWithEoi = true;
         bool detectEndByte = false;
         uint8_t endByte = 0;
-        
+
         gpibBus.cfg.paddr = address;
         gpibBus.addressDevice(gpibBus.cfg.paddr, TALK);     // tel device 'paddr' to talk. If you do this and the device has nothing to say, you might get an error.
         gpibBus.receiveData(buf, readWithEoi, detectEndByte, endByte);  // get the data from the bus and send out
@@ -119,19 +157,15 @@ class SCPI_handler : public SCPI_handler_interface {
         // not needed for the GPIB bus, is done differently
     }
 
-   private:
 };
 
 #pragma endregion
 
-#pragma region Socket servers
+#pragma region VXI related Socket servers and helpers
 
 static SCPI_handler scpi_handler;                    ///< The bridge from the vxi server to the SCPI command handler
 static VXI_Server vxi_server(scpi_handler);          ///< The vxi server
 static RPC_Bind_Server rpc_bind_server(vxi_server);  ///< The RPC_Bind_Server for the vxi server
-
-#define NUM_DEVICES 1
-// #define BASE_PORT 5025
 
 #pragma endregion
 
@@ -176,7 +210,7 @@ void setup() {
     // for now, just ignore if we have a good address
 
     debugPort.println(F("Starting TCP server..."));
-    vxi_server.begin(5025, 1, LOG_DETAILS);
+    vxi_server.begin(5025, LOG_DETAILS);
 
     debugPort.println(F("Starting port mappers on TCP and UDP..."));
     rpc_bind_server.begin(LOG_DETAILS);
@@ -215,10 +249,7 @@ void setup() {
  */
 void loop() {
 
-    bool busyflags[NUM_DEVICES];
-    busyflags[0] = !vxi_server.available();
-
-    loop_serial_ui_and_led(busyflags, NUM_DEVICES);
+    loop_serial_ui_and_led(vxi_server.nr_connections());
     // loop_ethernet();
     rpc_bind_server.loop();
     vxi_server.loop();

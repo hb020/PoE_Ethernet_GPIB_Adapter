@@ -2,6 +2,7 @@
 
 #include "utilities.h"
 #include <Ethernet.h>
+#include "config.h"
 
 /*!
   @brief  Interface with the devices.
@@ -40,8 +41,9 @@ class VXI_Server
     ~VXI_Server();
 
     void loop();
-    void begin(uint32_t port, int address, bool debug);
-    bool available();
+    void begin(uint32_t port, bool debug);
+    int nr_connections(void);
+    bool have_free_connections(void);
 
     uint32_t allocate();
     uint32_t port() { return vxi_port; }
@@ -50,17 +52,17 @@ class VXI_Server
     // void disconnect_client(const IPAddress &ip);
 
   protected:
-    void create_link();
-    void destroy_link();
-    void read();
-    void write();
-    bool handle_packet();
+    void create_link(EthernetClient &tcp, int slot);
+    void destroy_link(EthernetClient &tcp, int slot);
+    void read(EthernetClient &tcp, int slot);
+    void write(EthernetClient &tcp, int slot);
+    bool handle_packet(EthernetClient &tcp, int slot);
     void parse_scpi(char *buffer);
     bool debug;
-    int address;
 
     EthernetServer *tcp_server;
-    EthernetClient client;
+    EthernetClient clients[MAX_VXI_CLIENTS];
+    uint8_t addresses[MAX_VXI_CLIENTS];
     Read_Type read_type;
     uint32_t rw_channel;
     uint32_t vxi_port;
