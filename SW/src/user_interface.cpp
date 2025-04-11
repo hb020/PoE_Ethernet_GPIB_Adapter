@@ -138,8 +138,9 @@ void loop_led(bool has_clients) {
         LEDRed();
     } else {
         if (has_clients) {
-            // green on, pulse blue
-            LEDGreen(true, false);
+            // no red, half green, pulse blue
+            digitalWrite(LED_R, LOW);
+            analogWrite(LED_B, 128);
             LEDPulse(false, false, true);
         } else {
             // all off, pulse green
