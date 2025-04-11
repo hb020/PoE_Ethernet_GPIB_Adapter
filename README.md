@@ -1,9 +1,28 @@
 
 # PoE Ethernet GPIB Adapter
 
+GOAL OF THIS FORK: add pyvisa compatibility, be it RAW or VXI-11.2
+
 STATUS OF THIS FORK: WIP
 
-GOAL OF THIS FORK: add pyvisa compatibility, be it RAW or VXI-11.2
+* VXI11.2 server works, is robust and fast. (with limitations: no support for device sub-addresses, like original, and no interrupts). Supports up to 30 client-instrument combinations. Should be enough. Requires no config nor eeprom, and is discoverable over the network.
+* the LED now indicates different states: blue for waiting for DHCP, red for error in DHCP, green flashing for idle, green/blue flashing for busy
+* prepared for a serial console, only logs to it right now.
+* mdns is not possible. tried multiple libraries, they do not work for this type of AVR
+* loads of RAM still available (4k)
+* fully integrated with platformio (but can be compiled also outside of platformio)
+* RAW server is abandoned, as it would need many more resources.
+
+TODO:
+* re-integrate the prologix service, to run in // with the VXI-11 service. Because why not, and it is likely possible.
+* add a web server (nice to have)
+* clean up code, re-check deviation between original AR488 source and this code. Only the AR488.ino file will probably be totally turned upside down, will try to keep the other files as close to original (for future maintenance).
+* document
+* add more tests
+
+TODO that I cannot do, would need your help with that:
+* test with other instruments. Right now I do reads that are equivalent to "++read eoi". Might not be good for all instruments.
+
 
 ## PoE-powered GPIB Adapter with Ethernet and USB-C Support
 
