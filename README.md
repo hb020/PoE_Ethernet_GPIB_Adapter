@@ -11,6 +11,7 @@ STATUS OF THIS FORK: WIP
 * mdns is not possible. tried multiple libraries, they do not work for this type of AVR
 * loads of RAM still available (4k)
 * fully integrated with platformio (but can be compiled also outside of platformio)
+* RAW server is abandoned, as it would need many more resources.
 
 TODO:
 * re-integrate the prologix service, to run in // with the VXI-11 service. Because why not, and it is likely possible.
