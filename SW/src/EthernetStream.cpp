@@ -5,25 +5,15 @@ EthernetStream::EthernetStream()
     : lastActivityTime(0), timeout(10000) {}
 
 
-void EthernetStream::begin(byte* mac, IPAddress ip, uint16_t port) {
+bool EthernetStream::begin(uint32_t port) {
         
-    this->mac = mac;
-    this->ip = ip;
     this->port = port;
     server = new EthernetServer(port);
-
-    Ethernet.init(7);
-    if (ip == IPAddress(0, 0, 0, 0)) {
-        // Use DHCP
-        Ethernet.begin(mac);
-    } 
-    else {
-        // Use static IP
-        Ethernet.begin(mac, ip);
-    }
+    if (!server) return false;
 
     server->begin();
     lastActivityTime = millis();
+    return true;
 }
 
 void EthernetStream::checkClient() {
@@ -33,8 +23,6 @@ void EthernetStream::checkClient() {
     }
     if (!client) {
         client = server->available();
-        if (client) {
-        }
     }
     if (client) {
         lastActivityTime = millis();
@@ -42,9 +30,12 @@ void EthernetStream::checkClient() {
 }
 
 int EthernetStream::available() {
+    if (!server) return 0;
     checkClient();
     if (!client) {
         client = server->available();
+        if (client) {
+        }        
     }
     if (client) {
         return client.available();
@@ -86,10 +77,16 @@ size_t EthernetStream::write(uint8_t b) {
     return 0;
 }
 
-void EthernetStream::maintain() {
+int EthernetStream::maintain(void) {
     unsigned long currentMillis = millis();
     if (client && (currentMillis - lastActivityTime > timeout)) {
         client.stop();
         client = EthernetClient();
+    }
+    // TOOD: would it be better to just call checkClient?
+    if (client) {
+        return 1;
+    } else {
+        return 0;
     }
 }

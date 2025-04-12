@@ -9,8 +9,8 @@ class EthernetStream : public Stream {
 public:
     EthernetStream();
   
-    void begin(byte* mac, IPAddress ip, uint16_t port);
-    void maintain();
+    bool begin(uint32_t port);
+    int maintain(void);
     int available() override;
     int read() override;
     int peek() override;
@@ -24,7 +24,7 @@ private:
     IPAddress ip;
     uint16_t port;
     void checkClient();
-    EthernetServer* server;
+    EthernetServer *server;
     EthernetClient client;
     String buffer;
     unsigned long lastActivityTime;  // Track the last activity time

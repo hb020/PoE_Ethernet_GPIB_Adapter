@@ -40,7 +40,7 @@ class VXI_Server
     // VXI_Server(SCPI_handler_interface &scpi_handler, uint32_t port);
     ~VXI_Server();
 
-    void loop();
+    int loop();
     void begin(uint32_t port, bool debug);
     int nr_connections(void);
     bool have_free_connections(void);

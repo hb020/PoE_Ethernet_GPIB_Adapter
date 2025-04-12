@@ -74,8 +74,12 @@ void VXI_Server::begin(uint32_t port, bool debug)
     tcp_server->begin();
 }
 
-
-void VXI_Server::loop()
+/**
+ * @brief run the VXI RPC server loop.
+ * 
+ * @return int the active number of clients
+ */
+int VXI_Server::loop()
 {
     // close any clients that are not connected
     for (int i = 0; i < MAX_VXI_CLIENTS; i++) {
@@ -142,6 +146,7 @@ void VXI_Server::loop()
             }
         }
     }
+    return nr_connections();
 }
 
 bool VXI_Server::handle_packet(EthernetClient &client, int slot)

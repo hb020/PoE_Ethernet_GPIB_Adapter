@@ -1,4 +1,3 @@
-#ifdef INTERFACE_PROLOGIX
 //#pragma GCC diagnostic push
 //#pragma GCC diagnostic ignored "-Wtype-limits"
 //#pragma GCC diagnostic ignored "-Wunused-variable"
@@ -16,6 +15,15 @@
 
 
 /***** FWVER "AR488 GPIB controller, ver. 0.53.03, 08/04/2025" *****/
+
+// >>> Modified:
+//      * driven from another file's setup and loop (renamed to `setup_prologix` and `loop_prologix`)
+//      * for ethernet, via the new EthernetStream class (see `setup_prologix` and `loop_prologix`)
+//      * individualise the setup of the gpib bus (see `setup_gpibBusConfig`)
+//      * added loads of forward declarations, to be compatible with platformio and other compilers
+//      * added a small helper function `prologix_nr_connections()`
+//
+// All changed sections are marked with ">>> Modified" comments.
 
 /*
   Arduino IEEE-488 implementation by John Chajecki
@@ -271,56 +279,113 @@ bool sendIdn = false;
 /***** COMMON CODE SECTION *****/
 /***** vvvvvvvvvvvvvvvvvvv *****/
 
+/*******************************/
+/***** Function Prototypes *****/
+/***** vvvvvvvvvvvvvvvvvvv *****/
+// >>> Modified: added this section with forward declarations
+
+void tonMode();
+void lonMode();
+void attnRequired();
+bool isIdnQuery(char* buffr);
+bool isCmd(char* buffr);
+void showPrompt();
+void errorMsg(uint8_t err);
+void addPbuf(char c);
+void flushPbuf();
+uint8_t parseInput(char c);
+void initDevice();
+void initController();
+void execGpibCmd(uint8_t gpibcmd);
+void device_listen_h();
+void device_talk_h();
+void device_sdc_h();
+void device_spd_h();
+void device_spe_h();
+void device_tct_h();
+bool device_unl_h();
+bool device_unt_h();
+#ifdef REMOTE_SIGNAL_PIN
+void device_llo_h();
+void device_gtl_h();
+#endif
+void printDbPinout();
+void printCtrlPinout();
+void printPin(const __FlashStringHelper* pinid, uint8_t pin);
+void showATNStatus(uint8_t atnstat, uint8_t ustat, uint8_t atnbytes[], size_t bcnt);
+bool isRange(char* rangestr, size_t rsize, unsigned long values[2]);
+void setup_prologix(IPAddress ip, uint16_t port);
+uint8_t serialIn_h();
+void execMacro(uint8_t idx);
+void addr_h(char* params);
+void rtmo_h(char* params);
+void eos_h(char* params);
+void eoi_h(char* params);
+void cmode_h(char* params);
+void eot_en_h(char* params);
+void eot_char_h(char* params);
+void amode_h(char* params);
+void ver_h(char* params);
+void read_h(char* params);
+void clr_h();
+void llo_h(char* params);
+void loc_h(char* params);
+void ifc_h();
+void trg_h(char* params);
+void rst_h();
+void spoll_h(char* params);
+void srq_h();
+void stat_h(char* params);
+void save_h();
+void lon_h(char* params);
+void help_h(char* params);
+void aspoll_h();
+void dcl_h();
+void default_h();
+void eor_h(char* params);
+void ppoll_h();
+void ren_h(char* params);
+void verb_h();
+void setvstr_h(char* params);
+void prom_h(char* params);
+void ton_h(char* params);
+void srqa_h(char* params);
+void repeat_h(char* params);
+void tct_h(char* params);
+void macro_h(char* params);
+void xdiag_h(char* params);
+void id_h(char* params);
+void idn_h(char* params);
+void hflags_h(char* params);
+void fndl_h(char* params);
+void send_h(char* params);
+void unlisten_h();
+void untalk_h();
+void execCmd(char *buffr, uint8_t dsize);
+void sendToInstrument(char *buffr, uint8_t dsize);
+void getCmd(char *buffr);
+
+/***** ^^^^^^^^^^^^^^^^^^^ *****/
+/***** Function Prototypes *****/
+/*******************************/
 
 /******  Arduino standard SETUP procedure *****/
-void setup() {
+// >>> Modified: 
+//    * name of the function: setup_prologix()
+//    * most of the init code is external now
+//    * moved all of the gpib bus config and setup to setup_gpibBus()
+//    * changed to use EthernetStream
 
-  // Disable the watchdog (needed to prevent WDT reset loop)
-#ifdef __AVR__
-  wdt_disable();
-#endif
-
-  // Turn off internal LED (set OUPTUT/LOW) - Arduinos have a separate power LED
-#ifdef LED_BUILTIN
-  pinMode(LED_BUILTIN, OUTPUT);
-  digitalWrite(LED_BUILTIN, LOW);
-#endif
-
-// For RPI we turn on the built-in LED as a power indicator
-#ifdef ARDUINO_ARCH_RP2040
-  pinMode(LED_BUILTIN, OUTPUT);
-  digitalWrite(LED_BUILTIN, HIGH);
-#endif
-
-#ifdef REMOTE_SIGNAL_PIN
-  pinMode(REMOTE_SIGNAL_PIN, OUTPUT);
-  digitalWrite(REMOTE_SIGNAL_PIN, LOW);
-#endif
-
-
-  // Initialise parse buffer
-  flushPbuf();
-
-  // Initialise serial at the configured baud rate
-  AR_SERIAL_PORT.begin(AR_SERIAL_SPEED);
-
-#ifdef DEBUG_ENABLE
-  // Initialise debug port
-  DB_SERIAL_PORT.begin(DB_SERIAL_SPEED);
-#endif
-
-#ifdef AR_SERIAL_BT_ENABLE
-  // If enabled, initialise Bluetooth
-  /* If its the same interface as AR_SERIAL_PORT then there will be
-   * some disruption while the function auto-detects the HC05 baud
-   * rate and configures the HC05. Once this is done, AR_SERIAL_PORT
-   * will be set back to the configured baud rate.
-   */
-  btInit();
-#endif
+/**
+ * @brief Configure and set up gpibBusConfig object
+ * It loads the config from EEPROM if available, and sets up the MCP23S17
+ * expander chip if used.
+ * It also sets up the SN7516x IC if used.
+ */
+void setup_gpibBusConfig() {
 
   // Using MCP23S17 (SPI) expander chip
-#ifdef AR488_MCP23S17
+  #ifdef AR488_MCP23S17
   // Ensure the Arduino MCP select pin is set as an OUPTPUT and is HIGH
   pinMode(MCP_SELECTPIN, OUTPUT);
   digitalWrite(MCP_SELECTPIN, HIGH);
@@ -404,25 +469,35 @@ void setup() {
   execMacro(0);
 #endif
 
-#ifdef SAY_HELLO
-  dataPort.print(F("AR488 ready "));
-  if (gpibBus.isController()){
-    dataPort.println(F("(controller)."));
-  }else{
-    dataPort.println(F("(device)."));
-  }
-#endif
+}
 
-  if (gpibBus.cfg.hflags & 0x01) dataPort.print(F("AR488~RDY"));
+/**
+ * @brief Set the up prologix server
+ * 
+ * The processor will already have been initialised and the gpib bus will already have been set up
+ * Ethernet will also have been initialised.
+ *
+ */
+void setup_prologix(void) {
 
-  dataPort.flush();
+  // Initialise parse buffer
+  flushPbuf();
 
+  // Initialise dataport, serial or ethernet as defined
+  startDataPort();
 }
 /****** End of Arduino standard SETUP procedure *****/
 
 
 /***** ARDUINO MAIN LOOP *****/
-void loop() {
+// >>> Modified: name of the function, added maintainDataPort() and added a return value;
+/**
+ * @brief run the main loop for the prologix server
+ * 
+ * @return int the number of active clients (can only be 0 or 1)
+ */
+int loop_prologix(void) {
+  int nrclients = maintainDataPort();
 
   bool errFlg = false; 
 
@@ -550,6 +625,9 @@ if (lnRdy>0){
   if (dataPort.available()) lnRdy = serialIn_h();
 
   delayMicroseconds(5);
+
+  // >> Modified: return the number of active clients
+  return nrclients;
 }
 /***** END MAIN LOOP *****/
 
@@ -3211,4 +3289,3 @@ void tonMode(){
   gpibBus.setControls(DIDS);
 
 }
-#endif

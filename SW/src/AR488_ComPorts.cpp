@@ -20,7 +20,7 @@
 
     SoftwareSerial dataPort(SW_SERIAL_RX_PIN, SW_SERIAL_TX_PIN);
 
-    void startDataPort(byte* mac, IPAddress ip) {
+    void startDataPort() {
       dataPort.begin(AR_SERIAL_SPEED);
     }
 
@@ -28,28 +28,41 @@
 
     Stream& dataPort = AR_SERIAL_PORT;
 
-    void startDataPort(byte* mac, IPAddress ip) {
+    void startDataPort() {
       AR_SERIAL_PORT.begin(AR_SERIAL_SPEED);
     }
   
   #endif
 
-  void maintainDataPort() {}
+  int maintainDataPort() { return 0; }
 #else
-  #include "EthernetStream.h"
   EthernetStream ethernetPort;
-  Stream& dataPort;
+  EthernetStream& dataPort = ethernetPort;
 
-void startDataPort(byte* mac, IPAddress ip) {
+void startDataPort() {
     //byte mac[] = { 0xDE, 0xAD, 0xBE, 0xEF, 0xFE, 0xED }; // Temporary hard coded MAC
     //IPAddress ip(0, 0, 0, 0); // Same
-  
-    ethernetPort.begin(mac, ip, 1234);
-    dataPort = ethernetPort;
+
+    // debugPort.print(F("Starting TCP server on port "));
+    // debugPort.println(PROLOGIX_PORT);
+    // delay(1000);
+    bool r = ethernetPort.begin(PROLOGIX_PORT);
+    if (!r) {
+        debugPort.println(F("Failed to start TCP server"));
+        return;
+    }
+    // debugPort.println(F("TCP server started"));
+    // delay(1000);
 }
 
-void maintainDataPort() {
-  ethernetPort.maintain();
+/**
+/**
+ * @brief Maintain the client connections
+ * 
+ * @return int return the active number of clients
+ */
+int maintainDataPort() {
+  return ethernetPort.maintain();
 }
 #endif
 #else

@@ -8,15 +8,19 @@ The files starting with `AR488` were copied to `\SW\src` and modified:
 
 ## AR488.ino
 
-This is the 'main' file. It received a complete code shuffle, as the structure was not compatible with cohabitation with other socket servers and it was lacking forward declarations, making it incompatible with 'standard' compilers.
+This is/was the 'main' file. It received most changes:
 
-The file was renamed to 'prologix_server.cpp'. The code sections that remain mostly original, are marked as such.
+* changed the setup section, as the structure was not compatible with cohabitation with other socket servers
+* was lacking forward declarations, making it incompatible with 'standard' compilers.
+
+The file was renamed to 'prologix_server.cpp'. The code sections that were modified, are marked as such, with explanation of what was changed.
 
 ## AR488_ComPorts.cpp and AR488_ComPorts.h
 
 * DEVNULL externalised to become a dependency
-* `startDataPort()` reworked into `void startDataPort(byte* mac,IPAddress ip)` so it can point to a `EthernetStream`.
-* `void maintainDataPort()` added
+* Added include to `EthernetStream.h`
+* `startDataPort()` version added that points to a `EthernetStream`.
+* `int maintainDataPort()` added
 * `printBuf()` added
 
 ## AR488_Config.h

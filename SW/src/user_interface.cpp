@@ -223,7 +223,7 @@ void loop_serial_ui_and_led(int nrConnections) {
             LEDRed();
         }
         display_freeram();
-        debugPort.print(F(", VXI-11 clients: "));
+        debugPort.print(F(", Clients: "));
         debugPort.print(nrConnections);
         debugPort.println();
         /*

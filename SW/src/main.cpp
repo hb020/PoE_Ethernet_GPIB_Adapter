@@ -1,17 +1,23 @@
-#ifdef INTERFACE_VXI11
 // #pragma GCC diagnostic push
 // #pragma GCC diagnostic ignored "-Wtype-limits"
 // #pragma GCC diagnostic ignored "-Wunused-variable"
 
-// STATUS:
-// WIP, just tested an echo server on 4 ports. This uses the EthernetStream class
-// that uses a String as output buffer (flushed upon \n). That could be improved and changed to a static buffer.
-// But main problem is the auto switching between LISTEN and TALK. VXI-11 is better for that, as it is explicit.
+// This is the entry point to the device.
+// The device can either function as a VXI11.2 server, either as a prologix server. (sorry, cannot run both due to lack of ROM)
 
-// VXI-11.2
+// You can choose which type you want by defining INTERFACE_PROLOGIX or INTERFACE_VXI11 in the config.h file.
+// By default, INTERFACE_VXI11 is defined, so you will get a VXI-11 server.
+// For PROLOGIX you must define INTERFACE_PROLOGIX in the config.h file or at compile time via -DINTERFACE_PROLOGIX.
+// Doing so will disable the VXI-11 server and enable the Prologix server.
+// If you define both, then the compiler will complain about not enough ROM space.
+// It could however work, provided you have enough ROM space.
 
+// For the explanation of the prologix server, see prologix_server.cpp and the AR488 documentation.
+
+// For VXI-11.2: 
+//
 // Example of connection string:
-
+//
 // 'normal' vxi-11: TCPIP::192.168.1.105::INSTR           implies inst0, see below
 //                  TCPIP::192.168.1.105::instN::INSTR    
 //  VXI-11.2        TCPIP::192.168.1.105::gpibN,A::INSTR  (or hpibN) A is gpib bus primary address. 0 reserved for the controller
@@ -46,21 +52,26 @@
 #include "AR488_Config.h"
 #include "AR488_GPIBbus.h"
 #include "AR488_ComPorts.h"
-#include "AR488_Eeprom.h"
+#include <Ethernet.h>
 
 #include "24AA256UID.h"
-#include "EthernetStream.h"
 #include "user_interface.h"
+#ifdef INTERFACE_VXI11
 #include "rpc_bind_server.h"
 #include "vxi_server.h"
+#endif
+// The following file is needed for the gpib setup, even if you do not use prologix. 
+// This is done there because the code is not trivial and maintenance is easier this way, as upstream code mixes gpib and prologix.
+#include "prologix_server.h"
 
 /****** Global variables with volatile values related to controller state *****/
 
 // External EEPROM with MAC and unique ID.
 _24AA256UID eeprom(0x50, true);
 
+#ifdef INTERFACE_VXI11
 // GPIB bus object
-GPIBbus gpibBus;
+extern GPIBbus gpibBus;
 
 #pragma region SCPI handler
 
@@ -172,6 +183,9 @@ static RPC_Bind_Server rpc_bind_server(vxi_server);  ///< The RPC_Bind_Server fo
 
 #pragma endregion
 
+#endif  // INTERFACE_VXI11
+
+
 #pragma region Setup and loop functions
 
 #define LOG_DETAILS true
@@ -182,7 +196,7 @@ static RPC_Bind_Server rpc_bind_server(vxi_server);  ///< The RPC_Bind_Server fo
  * It also sets up the EEPROM and GPIB bus configuration. The function tries to wait for DHCP to assign an IP address.
  */
 void setup() {
-    setup_serial_ui_and_led(F("Starting VXI-11.2 socket server GPIB interface..."));
+    setup_serial_ui_and_led(F("Starting socket servers and GPIB interface..."));
 
     // Disable the watchdog (needed to prevent WDT reset loop)
 #ifdef __AVR__
@@ -213,37 +227,23 @@ void setup() {
     // for now, just ignore if we have a good address
 
     // This would be the place to add mdns, but none of the main mdns libraries support the present ethernet library
-
-    debugPort.println(F("Starting TCP server..."));
+#ifdef INTERFACE_VXI11
+    debugPort.println(F("Starting VXI-11 TCP server..."));
     vxi_server.begin(VXI11_PORT, LOG_DETAILS);
 
-    debugPort.println(F("Starting port mappers on TCP and UDP..."));
+    debugPort.println(F("Starting VXI-11 port mappers on TCP and UDP..."));
     rpc_bind_server.begin(LOG_DETAILS);
     debugPort.println(F("VXI-11 servers started"));
-
-    // The following section is not needed if you do not use EEPROM to store gpibBus.cfg between startups.
-#ifdef E2END
-    // debugPort.println(F("EEPROM detected"));
-    // Read data from non-volatile memory
-    //(will only read if previous config has already been saved)
-    if (!isEepromClear()) {
-        debugPort.println(F("EEPROM has data, restoring gpib bus config from EEPROM."));
-        if (!epReadData(gpibBus.cfg.db, GPIB_CFG_SIZE)) {
-            // CRC check failed - config data does not match EEPROM
-            debugPort.println(F("CRC check failed. Erasing EEPROM...."));
-            epErase();
-            gpibBus.setDefaultCfg();
-            //      initAR488();
-            epWriteData(gpibBus.cfg.db, GPIB_CFG_SIZE);
-            debugPort.println(F("EEPROM data set to default."));
-        }
-    }
 #endif
+    // Configure and start GPIB interface
+    debugPort.println(F("Configuring and Starting GPIB bus..."));
+    setup_gpibBusConfig();
 
-    // Start the interface in the configured mode
-    debugPort.println(F("Starting GPIB bus..."));
-    gpibBus.begin();
-
+#ifdef INTERFACE_PROLOGIX
+    debugPort.println(F("Starting Prologix TCP server..."));
+    // delay(1000);  // wait for message to be printed
+    setup_prologix();
+#endif
     end_of_setup();
 }
 
@@ -253,11 +253,17 @@ void setup() {
  * @brief This is the main loop.
  */
 void loop() {
+    int nr_connections = 0;
 
-    loop_serial_ui_and_led(vxi_server.nr_connections());
-    // loop_ethernet();
+#ifdef INTERFACE_VXI11
     rpc_bind_server.loop();
-    vxi_server.loop();
+    nr_connections += vxi_server.loop();
+#endif
+#ifdef INTERFACE_PROLOGIX    
+    nr_connections += loop_prologix();
+#endif
+
+    // TODO: if these 2 were not mutually exclusive, we should separate the counters and give them individually to the UI
+    loop_serial_ui_and_led(nr_connections);
 }
 #pragma endregion
-#endif  // INTERFACE_VXI11

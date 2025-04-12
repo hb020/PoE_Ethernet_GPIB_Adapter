@@ -5,6 +5,8 @@
 #include "AR488_Config.h"
 #include <DEVNULL.h>
 
+#include "EthernetStream.h"
+
 /***** AR488_ComPorts.cpp, ver. 0.51.18, 26/02/2023 *****/
 
 
@@ -22,9 +24,14 @@
 
 #ifdef DATAPORT_ENABLE
 
+#ifdef AR_ETHERNET_PORT
+  extern EthernetStream& dataPort;
+#else
   extern Stream& dataPort;
-  void startDataPort(byte* mac, IPAddress ip);
-  void maintainDataPort(); 
+#endif
+
+  void startDataPort();
+  int maintainDataPort(); 
   #define DATAPORT_START() startDataPort()
   #define DATA_RAW_PRINT(str) dataPort.print(str)
   #define DATA_RAW_PRINTLN(str) dataPort.println(str)
