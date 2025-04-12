@@ -7,7 +7,7 @@ STATUS OF THIS FORK: WIP
 
 This code can produce either a VXI-11.2 device, or a Prologix device (the ROM is not big enough for both at the same time, although the code is compatible with cohabitation)
 
-* Switching between VXI-11 and prologix is done at compile time. If `config.h` `#define INTERFACE_PROLOGIX` or compiler option `-DINTERFACE_PROLOGIX` is used, the firmware produced is for prologix.
+* Switching between VXI-11 and prologix is done at compile time. If [config.h](/SW/src/config.h) `#define INTERFACE_PROLOGIX` or compiler option `-DINTERFACE_PROLOGIX` is used, the firmware produced is for prologix.
 * VXI-11.2 server works, is robust and fast. (with limitations: no support for device sub-addresses (is WIP in AR488), and no interrupts). Supports up to 30 client-instrument combinations. Should be enough. Requires no config nor eeprom, and is discoverable over the network.
 * Prologix server works as before.
 * the LED now indicates different states: blue for waiting for DHCP, red for error in DHCP, green flashing for idle, green/blue flashing for busy
@@ -16,7 +16,7 @@ This code can produce either a VXI-11.2 device, or a Prologix device (the ROM is
 * loads of RAM still available (4k+)
 * fully integrated with platformio (but can be compiled also outside of platformio)
 * RAW server is abandoned, as it would need many more resources.
-* It is based upon the latest AR488 (v0.53.03). Documented the adaptations in `/SW/src/Relation_to_AR488.md`.
+* It is based upon the latest AR488 (v0.53.03). Documented the adaptations in the document [Relation_to_AR488](/SW/src/Relation_to_AR488.md).
 
 TODO:
 
