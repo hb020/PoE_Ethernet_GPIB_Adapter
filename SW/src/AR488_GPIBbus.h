@@ -6,13 +6,9 @@
 #include "AR488_Layouts.h"
 #include "AR488_ComPorts.h"
 
-#ifdef EN_STORAGE
-#ifdef EN_TEK_4924
-#include "AR488_Store_Tek_4924.h"
-#endif
-#endif
 
-/***** AR488_GPIBbus.cpp, ver. 0.51.29, 18/03/2024 *****/
+
+/***** AR488_GPIBbus.cpp, ver. 0.53.02, 04/04/2025 *****/
 
 
 /*********************************************/
@@ -23,7 +19,7 @@
 
 /***** Debug Port *****/
 #ifdef DB_SERIAL_ENABLE
-extern Stream &debugStream;
+extern Stream &debugPort;
 /* Configured in Config.h */
 //#define DEBUG_GPIBbus_RECEIVE
 //#define DEBUG_GPIBbus_SEND
@@ -50,6 +46,7 @@ extern Stream &debugStream;
 #define GC_UNT 0x5F
 #define GC_TAD 0x40
 #define GC_PPE 0x60
+#define GC_SAD 0x60
 #define GC_PPD 0x70
 
 
@@ -68,8 +65,10 @@ extern Stream &debugStream;
 
 
 /***** Addressing direction *****/
-#define TALK true
-#define LISTEN false
+#define TONONE 0
+#define TOLISTEN 1
+#define TOTALK 2
+
 
 /***** Lastbyte - send EOI *****/
 #define NO_EOI false
@@ -143,18 +142,19 @@ public:
       bool eoi;         // Assert EOI on last data char written to GPIB - 0-disable, 1-enable
       uint8_t cmode;    // Controller/device mode (0=unset, 1=device, 2=controller)
       uint8_t caddr;    // This interface address
-      uint8_t paddr;    // Primary address to use when addressing device
-      uint8_t saddr;    // Secondary address to use when addressing device
+      uint8_t paddr;    // Primary address to use when addressing a device
+      uint8_t saddr;    // Secondary address to use when addressing a device
       uint8_t eos;      // EOS (end of send to GPIB) characters [0=CRLF, 1=CR, 2=LF, 3=None]
       uint8_t stat;     // Status byte to return in response to a serial poll
       uint8_t amode;    // Auto mode setting (0=off; 1=Prologix; 2=onquery; 3=continuous);
-      int rtmo;         // Read timout (read_tmo_ms) in milliseconds - 0-3000 - value depends on instrument
+      uint16_t rtmo;    // Read timout (read_tmo_ms) in milliseconds - 0-32000 - value depends on instrument
       char eot_ch;      // EOT character to append to USB output when EOI signal detected
       char vstr[48];    // Custom version string
       uint8_t eor;      // EOR (end of receive from GPIB instrument) characters [0=CRLF, 1=CR, 2=LF, 3=None, 4=LFCR, 5=ETX, 6=CRLF+ETX, 7=SPACE]
       char sname[16];   // Interface short name
       uint32_t serial;  // Serial number
       uint8_t idn;      // Send ID in response to *idn? 0=disable, 1=send name; 2=send name+serial
+      uint8_t hflags;   // Handshaking indicator flags
     };
     uint8_t db[GPIB_CFG_SIZE];
   };
@@ -202,13 +202,14 @@ public:
 
   void setStatus(uint8_t statusByte);
   bool sendCmd(uint8_t cmdByte);
+  bool sendSecondaryCmd(uint8_t paddr, uint8_t saddr, char * data, uint8_t dsize);
   enum gpibHandshakeStates readByte(uint8_t *db, bool readWithEoi, bool *eoi);
   enum gpibHandshakeStates writeByte(uint8_t db, bool isLastByte);
   bool receiveData(Stream &dataStream, bool detectEoi, bool detectEndByte, uint8_t endByte);
-  void sendData(const char *data, uint8_t dsize);
+  void sendData(char *data, uint8_t dsize);
   void clearDataBus();
-  void setControlVal(uint8_t value, uint8_t mask, uint8_t mode);
-  void setDataVal(uint8_t);
+  void setControlVal(uint8_t value);
+  void setDataVal(uint8_t value);
 
   bool isDeviceAddressedToListen();
   bool isDeviceAddressedToTalk();
@@ -216,15 +217,21 @@ public:
 
   void signalBreak();
 
-  bool addressDevice(uint8_t addr, bool dir);
+  bool addressDevice(uint8_t pri, uint8_t sec, uint8_t dir);
   bool unAddressDevice();
   bool haveAddressedDevice();
+
 private:
 
   bool txBreak;  // Signal to break the GPIB transmission
-  bool deviceAddressed;
+  uint8_t deviceAddressed;
   bool isTerminatorDetected(uint8_t bytes[3], uint8_t eorSequence);
 
+  // Interrupt flag for MCP23S17
+#ifdef AR488_MCP23S17
+//    extern volatile bool mcpIntA;  // MCP23S17 interrupt handler
+//    uint8_t mcpPinAssertedReg = 0;
+#endif
 };
 
 
