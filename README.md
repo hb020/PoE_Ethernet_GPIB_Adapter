@@ -5,18 +5,23 @@ GOAL OF THIS FORK: add pyvisa compatibility, be it RAW or VXI-11.2
 
 STATUS OF THIS FORK: WIP
 
-* VXI11.2 server works, is robust and fast. (with limitations: no support for device sub-addresses, like original, and no interrupts). Supports up to 30 client-instrument combinations. Should be enough. Requires no config nor eeprom, and is discoverable over the network.
+This code can produce either a VXI-11.2 device, or a Prologix device (the ROM is not big enough for both at the same time, although the code is compatible with cohabitation)
+
+* Switching between VXI-11 and prologix is done at compile time. If `config.h` `#define INTERFACE_PROLOGIX` or compiler option `-DINTERFACE_PROLOGIX` is used, the firmware produced is for prologix.
+* VXI-11.2 server works, is robust and fast. (with limitations: no support for device sub-addresses (is WIP in AR488), and no interrupts). Supports up to 30 client-instrument combinations. Should be enough. Requires no config nor eeprom, and is discoverable over the network.
+* Prologix server works as before.
 * the LED now indicates different states: blue for waiting for DHCP, red for error in DHCP, green flashing for idle, green/blue flashing for busy
 * prepared for a serial console, only logs to it right now.
 * mdns is not possible. tried multiple libraries, they do not work for this type of AVR
-* loads of RAM still available (4k)
+* loads of RAM still available (4k+)
 * fully integrated with platformio (but can be compiled also outside of platformio)
 * RAW server is abandoned, as it would need many more resources.
+* It is based upon the latest AR488 (v0.53.03). Documented the adaptations in `/SW/src/Relation_to_AR488.md`.
 
 TODO:
-* re-integrate the prologix service, to run in // with the VXI-11 service. Because why not, and it is likely possible.
-* add a web server (nice to have)
-* clean up code, re-check deviation between original AR488 source and this code. Only the AR488.ino file will probably be totally turned upside down, will try to keep the other files as close to original (for future maintenance).
+
+* add a web server (nice to have). This would only be possible with VXI-11, as prologix is very big.
+* clean up code
 * document
 * add more tests
 
