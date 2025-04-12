@@ -4,7 +4,7 @@
 // #pragma GCC diagnostic ignored "-Wunused-variable"
 
 // STATUS:
-// WIP, just tested an echo server on 4 ports. This uses the AR488_EthernetStream class
+// WIP, just tested an echo server on 4 ports. This uses the EthernetStream class
 // that uses a String as output buffer (flushed upon \n). That could be improved and changed to a static buffer.
 // But main problem is the auto switching between LISTEN and TALK. VXI-11 is better for that, as it is explicit.
 
@@ -49,7 +49,7 @@
 #include "AR488_Eeprom.h"
 
 #include "24AA256UID.h"
-#include "AR488_EthernetStream.h"
+#include "EthernetStream.h"
 #include "user_interface.h"
 #include "rpc_bind_server.h"
 #include "vxi_server.h"
@@ -116,7 +116,8 @@ class SCPI_handler : public SCPI_handler_interface {
 
         // Send data to the GPIB bus
         gpibBus.cfg.paddr = address;
-        if (!gpibBus.haveAddressedDevice()) gpibBus.addressDevice(gpibBus.cfg.paddr, LISTEN);
+        gpibBus.cfg.saddr = 0xFF;  // secondary address is not used
+        if (!gpibBus.haveAddressedDevice()) gpibBus.addressDevice(address, 0xFF, TOLISTEN);
         gpibBus.sendData(data, len);
         gpibBus.unAddressDevice();
 #endif
@@ -142,8 +143,10 @@ class SCPI_handler : public SCPI_handler_interface {
         uint8_t endByte = 0;
 
         gpibBus.cfg.paddr = address;
-        gpibBus.addressDevice(gpibBus.cfg.paddr, TALK);     // tel device 'paddr' to talk. If you do this and the device has nothing to say, you might get an error.
+        gpibBus.cfg.saddr = 0xFF;  // secondary address is not used
+        gpibBus.addressDevice(address, 0xFF, TOTALK);     // tel device 'paddr' to talk. If you do this and the device has nothing to say, you might get an error.
         gpibBus.receiveData(buf, readWithEoi, detectEndByte, endByte);  // get the data from the bus and send out
+        gpibBus.unAddressDevice();
         *len = buf.len();
         return true;
 #endif

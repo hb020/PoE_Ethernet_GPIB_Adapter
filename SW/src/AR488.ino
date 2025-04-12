@@ -1,3 +1,4 @@
+#ifdef INTERFACE_PROLOGIX
 //#pragma GCC diagnostic push
 //#pragma GCC diagnostic ignored "-Wtype-limits"
 //#pragma GCC diagnostic ignored "-Wunused-variable"
@@ -3210,3 +3211,4 @@ void tonMode(){
   gpibBus.setControls(DIDS);
 
 }
+#endif

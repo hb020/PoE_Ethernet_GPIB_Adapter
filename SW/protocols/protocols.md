@@ -69,7 +69,7 @@ All based on `gpibBus.isController() == true`
 ## Write data to GPIB
 
 ```cpp
-if (!gpibBus.haveAddressedDevice()) gpibBus.addressDevice(gpibBus.cfg.paddr, LISTEN);
+if (!gpibBus.haveAddressedDevice()) gpibBus.addressDevice(gpibBus.cfg.paddr, 0xFF, TOLISTEN);
 gpibBus.sendData(buffr, dsize);
 gpibBus.unAddressDevice();
 ```
@@ -77,6 +77,6 @@ gpibBus.unAddressDevice();
 ## Read data from GPIB
 
 ```cpp
-gpibBus.addressDevice(gpibBus.cfg.paddr, TALK);  // tel device 'paddr' to talk. If you do this and the device has nothing to say, you might get an error.
+gpibBus.addressDevice(gpibBus.cfg.paddr, 0xFF, TOTALK);  // tel device 'paddr' to talk. If you do this and the device has nothing to say, you might get an error.
 gpibBus.receiveData(*dataPort, readWithEoi, readWithEndByte, endByte); // get the data from the bus and send out
 ```

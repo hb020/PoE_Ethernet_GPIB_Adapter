@@ -1,12 +1,16 @@
-#include "AR488_EthernetStream.h"
+#include "EthernetStream.h"
 
 
-EthernetStream::EthernetStream(byte* mac, IPAddress ip, uint16_t port)
-    : server(port), mac(mac), ip(ip), port(port), lastActivityTime(0), timeout(10000) {}
+EthernetStream::EthernetStream()
+    : lastActivityTime(0), timeout(10000) {}
 
 
-void EthernetStream::begin() {
+void EthernetStream::begin(byte* mac, IPAddress ip, uint16_t port) {
         
+    this->mac = mac;
+    this->ip = ip;
+    this->port = port;
+    server = new EthernetServer(port);
 
     Ethernet.init(7);
     if (ip == IPAddress(0, 0, 0, 0)) {
@@ -18,7 +22,7 @@ void EthernetStream::begin() {
         Ethernet.begin(mac, ip);
     }
 
-    server.begin();
+    server->begin();
     lastActivityTime = millis();
 }
 
@@ -28,7 +32,7 @@ void EthernetStream::checkClient() {
         client = EthernetClient();
     }
     if (!client) {
-        client = server.available();
+        client = server->available();
         if (client) {
         }
     }
@@ -40,7 +44,7 @@ void EthernetStream::checkClient() {
 int EthernetStream::available() {
     checkClient();
     if (!client) {
-        client = server.available();
+        client = server->available();
     }
     if (client) {
         return client.available();

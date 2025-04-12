@@ -1,61 +1,7 @@
 #include <Arduino.h>
 #include "AR488_ComPorts.h"
-
+#include <DEVNULL.h>
 /***** AR488_ComPorts.cpp, ver. 0.51.18, 26/02/2023 *****/
-
-
-/***** DEVNULL Library *****
- *  AUTHOR: Rob Tillaart
- *  VERSION: 0.1.5
- *  PURPOSE: Arduino library for a /dev/null stream - useful for testing
- *  URL: https://github.com/RobTillaart/DEVNULL
- */
-
-DEVNULL::DEVNULL()
-{
-  setTimeout(0);        //  no timeout.
-  _bottomLessPit = -1;  //  nothing in the pit
-}
-
-int  DEVNULL::available()
-{
-  return 0;
-};
-
-int  DEVNULL::peek()
-{
-  return EOF;
-};
-
-int  DEVNULL::read()
-{
-  return EOF;
-};
-
-//  placeholder to keep CI happy
-void DEVNULL::flush()
-{
-  return;
-};
-
-size_t DEVNULL::write(const uint8_t data)
-{
-  _bottomLessPit = data;
-  return 1;
-}
-
-size_t DEVNULL::write( const uint8_t *buffer, size_t size)
-{
-  if (size > 0) _bottomLessPit = buffer[size - 1];
-  return size;
-}
-
-int DEVNULL::lastByte()
-{
-  return _bottomLessPit;
-}
-
-
 
 /***************************************/
 /***** Serial Port implementations *****/
@@ -67,11 +13,14 @@ int DEVNULL::lastByte()
 /****************************/
 
 #ifdef DATAPORT_ENABLE
+
+#ifndef AR_ETHERNET_PORT
+
   #ifdef AR_SERIAL_SWPORT
 
     SoftwareSerial dataPort(SW_SERIAL_RX_PIN, SW_SERIAL_TX_PIN);
 
-    void startDataPort() {
+    void startDataPort(byte* mac, IPAddress ip) {
       dataPort.begin(AR_SERIAL_SPEED);
     }
 
@@ -79,12 +28,30 @@ int DEVNULL::lastByte()
 
     Stream& dataPort = AR_SERIAL_PORT;
 
-    void startDataPort() {
+    void startDataPort(byte* mac, IPAddress ip) {
       AR_SERIAL_PORT.begin(AR_SERIAL_SPEED);
     }
   
   #endif
 
+  void maintainDataPort() {}
+#else
+  #include "EthernetStream.h"
+  EthernetStream ethernetPort;
+  Stream& dataPort;
+
+void startDataPort(byte* mac, IPAddress ip) {
+    //byte mac[] = { 0xDE, 0xAD, 0xBE, 0xEF, 0xFE, 0xED }; // Temporary hard coded MAC
+    //IPAddress ip(0, 0, 0, 0); // Same
+  
+    ethernetPort.begin(mac, ip, 1234);
+    dataPort = ethernetPort;
+}
+
+void maintainDataPort() {
+  ethernetPort.maintain();
+}
+#endif
 #else
 
   DEVNULL _dndata;
@@ -116,6 +83,28 @@ int DEVNULL::lastByte()
     }
 
   #endif
+
+  void printBuf(const char *data, size_t len) {
+    debugPort.print("\"");
+    for (size_t i = 0; i < len; i++) {
+      char ch = data[i];
+      if (ch == '\n') {
+        debugPort.print("\\n");
+      } else if (ch == '\r') {
+        debugPort.print("\\r");
+      } else if (ch == '\t') {
+        debugPort.print("\\t");
+      } else if (ch < 0x20 || ch > 0x7E) {
+        debugPort.print("\\x");
+        debugPort.print(ch, HEX);
+      } else {
+        debugPort.print(ch);
+      }
+    }
+    debugPort.print("\" (length: ");
+    debugPort.print(len);
+    debugPort.print(")\n");
+  }
 
   void printHex(uint8_t byteval) {
     char x[4] = {'\0'};

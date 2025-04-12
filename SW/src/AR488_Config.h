@@ -23,21 +23,17 @@
 /*
  * Uncomment to use custom board layout
  */
-//#define AR488_CUSTOM
+#define AR488_CUSTOM
 
 /*
  * Configure the appropriate board/layout section
  * below as required
- */
+*/
 #ifdef AR488_CUSTOM
-  /* Board layout */
-  /*
-   * Define board layout in the AR488 CUSTOM LAYOUT
-   * section below
-   */
-  /* Default serial port type */
-  #define AR_SERIAL_TYPE_HW
 
+#define AR_ETHERNET_PORT
+#define DEBUG_ENABLE
+  
 /*** UNO and NANO boards ***/
 #elif __AVR_ATmega328P__
   /* Board/layout selection */
@@ -259,25 +255,46 @@
 
 #ifdef AR488_CUSTOM
 
-#define DIO1_PIN  A0  /* GPIB 1  */
-#define DIO2_PIN  A1  /* GPIB 2  */
-#define DIO3_PIN  A2  /* GPIB 3  */
-#define DIO4_PIN  A3  /* GPIB 4  */
-#define DIO5_PIN  A4  /* GPIB 13 */
-#define DIO6_PIN  A5  /* GPIB 14 */
-#define DIO7_PIN  4   /* GPIB 15 */
-#define DIO8_PIN  5   /* GPIB 16 */
+#define DIO1_PIN  22  /*PD0 GPIB 1  */
+#define DIO2_PIN  23  /*PD1 GPIB 2  */
+#define DIO3_PIN  24  /*PD2 GPIB 3  */
+#define DIO4_PIN  25  /*PD3 GPIB 4  */
+#define DIO5_PIN  26  /*PD4 GPIB 13 */
+#define DIO6_PIN  27  /*PD5 GPIB 14 */
+#define DIO7_PIN  28  /*PD6 GPIB 15 */
+#define DIO8_PIN  29  /*PD7 GPIB 16 */
 
-#define IFC_PIN   8   /* GPIB 9  */
-#define NDAC_PIN  9   /* GPIB 8  */
-#define NRFD_PIN  10  /* GPIB 7  */
-#define DAV_PIN   11  /* GPIB 6  */
-#define EOI_PIN   12  /* GPIB 5  */
+#define EOI_PIN   14  /*PC0 GPIB 5  */
+#define DAV_PIN   15  /*PC1 GPIB 6  */
+#define NRFD_PIN  16  /*PC2 GPIB 7  */
+#define NDAC_PIN  17  /*PC3 GPIB 8  */
+#define IFC_PIN   18  /*PC4 GPIB 9  */
+#define SRQ_PIN   19  /*PC5 GPIB 10 */
+#define ATN_PIN   20  /*PC6 GPIB 11 */
+#define REN_PIN   21  /*PC7 GPIB 17 */
 
-#define SRQ_PIN   2   /* GPIB 10 */
-#define REN_PIN   3   /* GPIB 17 */
-#define ATN_PIN   7   /* GPIB 11 */
 
+/*
+Data bus        DIO1-  1   13 - DIO5 Data bus
+Data bus        DIO2-  2   14 - DIO6 Data bus
+Data bus        DIO3-  3   15 - DIO7 Data bus
+Data bus        DIO4-  4   16 - DIO8 Data bus
+Management bus  EOI -  5   17 - REN (Remote Enable) Management bus
+(End or Identify)                 (Data Valid)
+Handshake bus   DAV -  6   18 - GND  (Ground)
+(Data Valid)
+Handshake bus  NRFD-  7   19 - GND  (Ground)
+(Not Ready for Data)
+Handshake bus  NDAC-  8   20 - GND  (Ground)
+(No Data Accepted)
+Management bus  IFC -  9   21 - GND  (Ground)
+(Interface Clear)
+Management bus  SRQ - 10   22 - GND  (Ground)
+(Service Request)
+Management bus  ATN - 11   23 - GND  (Ground)
+(Attention)
+GND            GND - 12   24 - Logic GND (Ground)
+*/
 #endif
 
 /***** ^^^^^^^^^^^^^^^^^^^ *****/
