@@ -37,10 +37,10 @@ def test_query(inst, inst_name: str, m: str, write_delay_ms: int = 0):
 
 def test_device(instruments: List[str], repeat_query: int, timeout: int):
     rm = pyvisa.ResourceManager()
-    start_connect = datetime.datetime.now()
     inst = {}
     for my_inst_name in instruments:
         print(f"Connecting to '{my_inst_name}'", end='')
+        start_connect = datetime.datetime.now()
         try:
             inst[my_inst_name] = rm.open_resource(my_inst_name, timeout=timeout)
         except Exception as e:
