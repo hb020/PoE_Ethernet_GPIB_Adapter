@@ -188,7 +188,6 @@ static RPC_Bind_Server rpc_bind_server(vxi_server);  ///< The RPC_Bind_Server fo
 
 #pragma region Setup and loop functions
 
-#define LOG_DETAILS true
 /**
  * @brief Setup function
  *
@@ -229,10 +228,10 @@ void setup() {
     // This would be the place to add mdns, but none of the main mdns libraries support the present ethernet library
 #ifdef INTERFACE_VXI11
     debugPort.println(F("Starting VXI-11 TCP server..."));
-    vxi_server.begin(VXI11_PORT, LOG_DETAILS);
+    vxi_server.begin(VXI11_PORT, LOG_VXI_DETAILS);
 
     debugPort.println(F("Starting VXI-11 port mappers on TCP and UDP..."));
-    rpc_bind_server.begin(LOG_DETAILS);
+    rpc_bind_server.begin(LOG_VXI_DETAILS);
     debugPort.println(F("VXI-11 servers started"));
 #endif
     // Configure and start GPIB interface

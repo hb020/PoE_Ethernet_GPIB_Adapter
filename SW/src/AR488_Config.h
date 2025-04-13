@@ -31,9 +31,7 @@
 */
 #ifdef AR488_CUSTOM
 
-#define AR_ETHERNET_PORT
-#define PROLOGIX_PORT 1234
-#define DEBUG_ENABLE
+#include "config.h"
   
 /*** UNO and NANO boards ***/
 #elif __AVR_ATmega328P__
