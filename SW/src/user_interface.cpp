@@ -3,12 +3,50 @@
 #include "config.h"
 #include "AR488_ComPorts.h"
 #include "user_interface.h"
+#ifdef USE_SERIALMENU
+#include <SerialMenuCmd.h>
+#endif
 
 #ifndef DEBUG_ENABLE
 #error "DEBUG_ENABLE must be defined"
 #endif
 
-#pragma region IP ADDRESS
+#ifdef USE_SERIALMENU
+#pragma region Serial Menu
+SerialMenuCmd myMenu;
+
+void cmd1_DoIt(void) {}
+void cmd2_DoIt(void) {}
+
+tMenuCmdTxt txt1_DoIt[] = "a - Set the IP address";
+tMenuCmdTxt txt2_DoIt[] = "b - Reboot";
+tMenuCmdTxt txt3_DisplayMenu[] = "? - Menu";
+tMenuCmdTxt txt_Prompt[] = "";
+
+stMenuCmd list[] = {
+    {txt1_DoIt, 'a', cmd1_DoIt},
+    {txt2_DoIt, 'b', cmd2_DoIt},
+    {txt3_DisplayMenu, '?', []() { myMenu.ShowMenu();
+        myMenu.giveCmdPrompt();}}};
+
+#define NbCmds sizeof(list) / sizeof(stMenuCmd)
+
+void setup_serial_menu(void) {
+    myMenu.begin(list, NbCmds, txt_Prompt);
+}
+
+
+void loop_serial_menu(void) {
+    int8_t ret = myMenu.UserRequest();
+    if (ret > 0) {
+        myMenu.ExeCommand(ret);
+    }
+}
+
+#pragma endregion
+#endif
+
+#pragma region IP ADDRESS checking
 
 static IPAddress _previous_address(0, 0, 0, 0);
 static bool ip_address_is_wrong = false;
@@ -193,6 +231,9 @@ void setup_serial_ui_and_led(const __FlashStringHelper* helloStr) {
     debugPort.println(helloStr);
     display_freeram();
     debugPort.println("");
+#ifdef USE_SERIALMENU
+    setup_serial_menu();
+#endif
 }
 
 int counter = 0;
@@ -202,13 +243,12 @@ int counter = 0;
  * @param nrConnections number of clients connected
  */
 void loop_serial_ui_and_led(int nrConnections) {
-    if (debugPort.available()) {
-        char c = Serial.read();
-        debugPort.print(F("Received: "));
-        debugPort.println(c);
-    }
 
     loop_led(nrConnections > 0);
+
+#ifdef USE_SERIALMENU
+    loop_serial_menu();
+#endif
 
     if (onceASecond(false)) {
         if (ip_address_is_wrong) {
@@ -222,10 +262,12 @@ void loop_serial_ui_and_led(int nrConnections) {
             debugPort.println(F("  Please reboot!"));
             LEDRed();
         }
+
+        debugPort.print('\r');
         display_freeram();
         debugPort.print(F(", Clients: "));
         debugPort.print(nrConnections);
-        debugPort.println();
+        debugPort.print('\r');
         /*
         // LED test
         counter++;
@@ -266,6 +308,10 @@ void end_of_setup(void) {
     } else {
         LEDGreen();
     }
+#ifdef USE_SERIALMENU
+    myMenu.ShowMenu();
+    myMenu.giveCmdPrompt();
+#endif
 }
 
 #pragma endregion
