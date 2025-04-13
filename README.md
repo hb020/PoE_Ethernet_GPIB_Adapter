@@ -17,10 +17,10 @@ This code can produce either a VXI-11.2 device, or a Prologix device (the ROM is
 * fully integrated with platformio (but can be compiled also outside of platformio)
 * RAW server is abandoned, as it would need many more resources.
 * It is based upon the latest AR488 (v0.53.03). Documented the adaptations in the document [Relation_to_AR488](/SW/src/Relation_to_AR488.md).
+* Added a basic web server with stats and info (just because I can)
 
 TODO:
 
-* add a web server (nice to have). This would only be possible with VXI-11, as prologix is very big.
 * clean up code
 * document
 * add more tests

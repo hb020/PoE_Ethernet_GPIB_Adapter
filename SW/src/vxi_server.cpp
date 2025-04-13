@@ -128,6 +128,8 @@ int VXI_Server::loop()
         if (clients[i] && clients[i].available()) // if a connection has been established on port
         {
             bool bClose = false;
+            // read the entire packet, blocking if needed. The packet is small in general, so should have arrived completely
+            // TODO: make this work in a non blocking way
             int len = get_vxi_packet(clients[i]);
 
             if (len > 0) {

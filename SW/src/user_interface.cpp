@@ -6,6 +6,10 @@
 #ifdef USE_SERIALMENU
 #include <SerialMenuCmd.h>
 #endif
+#ifdef USE_WEBSERVER
+#include "web_server.h"
+BasicWebServer webServer;
+#endif
 
 #ifndef DEBUG_ENABLE
 #error "DEBUG_ENABLE must be defined"
@@ -191,7 +195,7 @@ void loop_led(bool has_clients) {
 
 #pragma endregion
 
-#pragma region SERIAL
+#pragma region UI Controller
 
 int freeRam(void) {
     /* for AVR, not ARM */
@@ -225,20 +229,46 @@ bool onceASecond(bool start = false) {
     }
 }
 
+/// This function is called once at startup. It initializes the LED, and serial port.
+// It is to be called at the very start, before network initialization.
 void setup_serial_ui_and_led(const __FlashStringHelper* helloStr) {
     setup_led();
     startDebugPort();
     debugPort.println(helloStr);
     display_freeram();
     debugPort.println("");
+}
+
+// This function is called once at the end of setup.
+// It is to be called at the end of setup, after network initialization.
+void end_of_setup(void) {
+    onceASecond(true);
+    if (ip_address_is_wrong) {
+        LEDRed();
+    } else {
+        LEDGreen();
+    }
+#ifdef USE_WEBSERVER
+    debugPort.println(F("Starting Web server..."));
+    webServer.begin();
+#endif
+
 #ifdef USE_SERIALMENU
+    debugPort.println(F("Starting Serial Menu..."));
     setup_serial_menu();
+#endif
+
+    debugPort.println(F("Setup complete."));
+    
+#ifdef USE_SERIALMENU
+    myMenu.ShowMenu();
+    myMenu.giveCmdPrompt();
 #endif
 }
 
 int counter = 0;
 /**
- * @brief print debug information on the console
+ * @brief run the UI (led, web, serial, whatever is configured)
  * 
  * @param nrConnections number of clients connected
  */
@@ -248,6 +278,9 @@ void loop_serial_ui_and_led(int nrConnections) {
 
 #ifdef USE_SERIALMENU
     loop_serial_menu();
+#endif
+#ifdef USE_WEBSERVER
+    webServer.loop(nrConnections);
 #endif
 
     if (onceASecond(false)) {
@@ -300,18 +333,5 @@ void loop_serial_ui_and_led(int nrConnections) {
     }
 }
 
-void end_of_setup(void) {
-    debugPort.println(F("Setup complete."));
-    onceASecond(true);
-    if (ip_address_is_wrong) {
-        LEDRed();
-    } else {
-        LEDGreen();
-    }
-#ifdef USE_SERIALMENU
-    myMenu.ShowMenu();
-    myMenu.giveCmdPrompt();
-#endif
-}
 
 #pragma endregion
