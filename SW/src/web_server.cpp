@@ -65,7 +65,7 @@ void BasicWebServer::sendResponse(int nrConnections) {
     client.print(Ethernet.localIP());
     client.print(F("::INSTR</b> for the controller, and</p><p><b>TCPIP::"));
     client.print(Ethernet.localIP());
-    client.println(F("::gpib,N::INSTR</b> for the instruments, where N is their address on the GPIB bus</p>"));
+    client.println(F("::gpib,<i>N</i>::INSTR</b> for the instruments, where <i>N</i> is their address on the GPIB bus</p>"));
 #endif
 #ifdef INTERFACE_PROLOGIX
     client.println(F("<h2>Prologix GPIB Ethernet Server</h2>"));
