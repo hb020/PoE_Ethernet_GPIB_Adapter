@@ -1906,6 +1906,13 @@ void setGpibState(uint8_t bits, uint8_t mask, uint8_t mode) {
   }
 }
 
+void setGpibCtrlDir(uint8_t bits, uint8_t mask) {
+    setGpibState(bits, mask, 1);
+};
+
+void setGpibCtrlState(uint8_t bits, uint8_t mask) {
+  setGpibState(bits, mask, 0);
+};
 
 #endif
 /***** ^^^^^^^^^^^^^^^^^^^^^^^^^ *****/
