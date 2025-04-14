@@ -4,6 +4,7 @@
 #include "AR488_ComPorts.h"
 #include "user_interface.h"
 #ifdef USE_SERIALMENU
+#include "24AA256UID.h"
 #include <SerialMenuCmd.h>
 #endif
 #ifdef USE_WEBSERVER
@@ -17,20 +18,93 @@ BasicWebServer webServer;
 
 #ifdef USE_SERIALMENU
 #pragma region Serial Menu
+// The menu handler is very basic. While handling a command, it is blocking.
 SerialMenuCmd myMenu;
 
-void cmd1_DoIt(void) {}
-void cmd2_DoIt(void) {}
+extern _24AA256UID eeprom;
 
-tMenuCmdTxt txt1_DoIt[] = "a - Set the IP address";
-tMenuCmdTxt txt2_DoIt[] = "b - Reboot";
-tMenuCmdTxt txt3_DisplayMenu[] = "? - Menu";
+void cmd1_DoIt(void) {
+    String s;
+    IPAddress ip;
+    uint8_t ipbuff[4];
+
+    ip = Ethernet.localIP();
+    debugPort.print(F("Current IP Address: "));
+    debugPort.println(ip);
+
+    debugPort.print(F("Configured IP Address: "));
+    eeprom.getIPAddress(ipbuff);
+    ip = IPAddress(ipbuff);
+    debugPort.println(ip);
+    if ((uint32_t)(ip) == 0) {
+        debugPort.println(F("to be obtained via DHCP (set to 0.0.0.0)"));
+    } else {
+        debugPort.println(ip);
+    }
+
+    debugPort.print(F("Enter the desired IP address (0.0.0.0 means: use DHCP): "));
+    if (myMenu.getStrValue(s)) {
+        if (ip.fromString(s.c_str())) {
+            debugPort.print(F("IP Address will be set to: "));
+            debugPort.println(ip);
+            debugPort.println(F("You will need to reboot now."));
+            ipbuff[0] = ip[0];
+            ipbuff[1] = ip[1];
+            ipbuff[2] = ip[2];
+            ipbuff[3] = ip[3];
+            eeprom.setIPAddress(ipbuff);
+        } else {
+            debugPort.println(F("Invalid IP address format."));
+        }
+    } else {
+        debugPort.println(F("Command aborted."));
+    }
+}
+
+#ifdef INTERFACE_VXI11
+void cmd2_DoIt(void) {
+    String s;
+    uint8_t inst;
+
+    inst = eeprom.getDefaultInstrument();
+    debugPort.print(F("Current default instrument address: "));
+    debugPort.println((int)inst);
+    debugPort.print(F("Enter the desired default instrument address (0-30), with 0 being the gateway: "));
+    if (myMenu.getStrValue(s)) {
+        inst = s.toInt();
+        if (inst >= 0 && inst <= 30) {
+            debugPort.print(F("Default Instrument address will be set to: "));
+            debugPort.println(inst);
+            debugPort.println(F("You will need to reboot now."));
+            eeprom.setDefaultInstrument(inst);
+        } else {
+            debugPort.println(F("Invalid instrument address."));
+        }
+    } else {
+        debugPort.println(F("Command aborted."));
+    }
+}
+#endif
+
+void cmd9_DoIt(void) {
+    // TODO Reboot
+}
+
+tMenuCmdTxt txt1_DoIt[] = "1 - Set IP address";
+#ifdef INTERFACE_VXI11
+tMenuCmdTxt txt2_DoIt[] = "2 - Set default instrument address";
+#endif
+tMenuCmdTxt txt9_DoIt[] = "9 - Reboot";
+tMenuCmdTxt txt_DisplayMenu[] = "? - Menu";
 tMenuCmdTxt txt_Prompt[] = "";
 
 stMenuCmd list[] = {
-    {txt1_DoIt, 'a', cmd1_DoIt},
-    {txt2_DoIt, 'b', cmd2_DoIt},
-    {txt3_DisplayMenu, '?', []() { myMenu.ShowMenu();
+    {txt1_DoIt, '1', cmd1_DoIt},
+#ifdef INTERFACE_VXI11    
+    {txt2_DoIt, '2', cmd2_DoIt},
+#endif
+    {txt9_DoIt, '9', cmd9_DoIt},
+    {txt_DisplayMenu, '?', []() { myMenu.ShowMenu();
         myMenu.giveCmdPrompt();}}};
 
 #define NbCmds sizeof(list) / sizeof(stMenuCmd)
@@ -242,7 +316,6 @@ void setup_serial_ui_and_led(const __FlashStringHelper* helloStr) {
 // This function is called once at the end of setup.
 // It is to be called at the end of setup, after network initialization.
 void end_of_setup(void) {
-    onceASecond(true);
     if (ip_address_is_wrong) {
         LEDRed();
     } else {
@@ -264,6 +337,8 @@ void end_of_setup(void) {
     myMenu.ShowMenu();
     myMenu.giveCmdPrompt();
 #endif
+    // and start the timer for the UI loop
+    onceASecond(true);
 }
 
 int counter = 0;

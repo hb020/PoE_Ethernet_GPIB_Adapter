@@ -13,45 +13,79 @@ void BasicWebServer::begin() {
     server.begin();
 }
 
+int BasicWebServer::nr_connections(void) {
+    int count = 0;
+    for (int i = 0; i < MAX_WEB_CLIENTS; i++) {
+        if (clients[i]) {
+            count++;
+        }
+    }
+    return count;
+}
+
+bool BasicWebServer::have_free_connections(void) {
+    for (int i = 0; i < MAX_WEB_CLIENTS; i++) {
+        if (!clients[i]) {
+            return true;
+        }
+    }
+    return false;
+}
+
 void BasicWebServer::loop(int nrConnections) {
     // simple TCP server based on Ethernet and 'accept()', meaning I must handle the lifecycle of the client 
-    // Right now it only handles 1 client at a time.
     // It is not blocking for input, but blocks for output
-    if (client && !client.connected()) {
-        client.stop();
-    }
-    if (!client) {
-        EthernetClient newClient = server.accept();
-        if (newClient) {
-            client = newClient;
-            currentLineIsBlank = true;
+
+    // close any clients that are not connected
+    for (int i = 0; i < MAX_WEB_CLIENTS; i++) {
+        if (clients[i] && !clients[i].connected()) {
+            clients[i].stop();            
         }
     }
-    if (client) {
-      // an http request ends with a blank line
-        while (client.connected() && client.available()) {
-          char c = client.read();
-          // if you've gotten to the end of the line (received a newline
-          // character) and the line is blank, the http request has ended,
-          // so you can send a reply
-          if (c == '\n' && currentLineIsBlank) {
-            sendResponse(nrConnections);
-            delay(10); // yield to send reply
-            client.stop();
-            break;
-          }
-          if (c == '\n') {
-            // you're starting a new line
-            currentLineIsBlank = true;
-          } else if (c != '\r') {
-            // you've gotten a character on the current line
-            currentLineIsBlank = false;
-          }
+
+    // check if a new client is available
+    EthernetClient newClient = server.accept();
+    if (newClient) {
+        bool found = false;
+        for (int i = 0; i < MAX_WEB_CLIENTS; i++) {
+            if (!clients[i]) {
+                clients[i] = newClient;
+                found = true;
+                currentLineIsBlank[i] = true; // init parser
+                break;
+            }
+        }
+        if (!found) {
+            newClient.stop();
         }
     }
+
+    // handle any incoming data
+    for (int i = 0; i < MAX_WEB_CLIENTS; i++) {
+        // an http request ends with a blank line
+        while (clients[i].connected() && clients[i].available()) {
+            char c = clients[i].read();
+            // if you've gotten to the end of the line (received a newline
+            // character) and the line is blank, the http request has ended,
+            // so you can send a reply
+            if (c == '\n' && currentLineIsBlank[i]) {
+              sendResponse(&clients[i], nrConnections);
+              delay(10); // yield to send reply
+              clients[i].stop();
+              break;
+            }
+            if (c == '\n') {
+              // you're starting a new line
+              currentLineIsBlank[i] = true;
+            } else if (c != '\r') {
+              // you've gotten a character on the current line
+              currentLineIsBlank[i] = false;
+            }
+          }    
+    }    
 };
 
-void BasicWebServer::sendResponse(int nrConnections) {
+void BasicWebServer::sendResponse(EthernetClient &client, int nrConnections) {
     // send a standard http response header
     client.println(F("HTTP/1.1 200 OK\nContent-Type: text/html\nConnection: close\nRefresh: 5\n"));  // refresh the page automatically every 5 sec
     client.println(F("<!DOCTYPE HTML>\n<html><head><title>Ethernet2GPIB</title><style>body { font-family: Arial, sans-serif; }</style></head><body>"));

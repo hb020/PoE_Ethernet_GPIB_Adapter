@@ -3,6 +3,8 @@
 #include <Ethernet.h>
 #include "config.h"
 
+#define MAX_WEB_CLIENTS 10
+
 class BasicWebServer {
 public:
     BasicWebServer();
@@ -10,8 +12,10 @@ public:
     void loop(int nrConnections);
 
 private:
-    void sendResponse(int nrConnections);
+    int nr_connections(void);
+    bool have_free_connections(void);
+    void sendResponse(EthernetClient &client, int nrConnections);
     EthernetServer server = EthernetServer(80);
-    EthernetClient client;
-    bool currentLineIsBlank = false;
+    EthernetClient clients[MAX_WEB_CLIENTS];
+    bool currentLineIsBlank[MAX_WEB_CLIENTS];
 };
