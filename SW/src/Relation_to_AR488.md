@@ -37,4 +37,4 @@ Not modified
 
 ## AR488_Layouts.cpp and AR488_Layouts.h
 
-Not modified
+Replaced the entire `CUSTOM PIN LAYOUT SECTION` in the .cpp file.
