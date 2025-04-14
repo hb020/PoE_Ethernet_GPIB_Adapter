@@ -77,6 +77,13 @@ void GPIBbus::stop() {
 void GPIBbus::setDefaultCfg() {
   // Set default controller mode values ({'\0'} sets version string array to null)
   cfg = { false, false, 2, 0, 1, 0xFF, 0, 0, 0, 1200, 0, { '\0' }, 0, { '\0' }, 0, 0 };
+#ifdef AR488_GPIBconf_EXTEND
+  // Set default IP address
+  cfg.ip[0] = 0;
+  cfg.ip[1] = 0;
+  cfg.ip[2] = 0;
+  cfg.ip[3] = 0;
+#endif  
 }
 
 

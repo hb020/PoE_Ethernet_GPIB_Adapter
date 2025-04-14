@@ -374,6 +374,7 @@ void getCmd(char *buffr);
 //    * name of the function: setup_prologix()
 //    * most of the init code is external now
 //    * moved all of the gpib bus config and setup to setup_gpibBus()
+//    * in setup_gpibBusConfig() re-activated the debug logs
 //    * changed to use EthernetStream
 
 /**
@@ -416,18 +417,18 @@ void setup_gpibBusConfig() {
 
   // Read config from EEPROM
 #ifdef E2END
-//  DB_RAW_PRINTLN(F("EEPROM detected!"));
+  // DB_RAW_PRINTLN(F("EEPROM detected!"));
   // Read data from non-volatile memory
   //(will only read if previous config has already been saved)
   if (!isEepromClear()) {
-//DB_RAW_PRINTLN(F("EEPROM has data."));
+    DB_RAW_PRINTLN(F("EEPROM has data."));
     if (!epReadData(gpibBus.cfg.db, GPIB_CFG_SIZE)) {
       // CRC check failed - config data does not match EEPROM
-//DB_RAW_PRINTLN(F("CRC check failed. Erasing EEPROM...."));
+      DB_RAW_PRINTLN(F("CRC check failed. Erasing EEPROM...."));
       epErase();
       gpibBus.setDefaultCfg();
       epWriteData(gpibBus.cfg.db, GPIB_CFG_SIZE);
-//DB_RAW_PRINTLN(F("EEPROM data set to default."));
+      DB_RAW_PRINTLN(F("EEPROM data set to default."));
     }
   }
 #endif

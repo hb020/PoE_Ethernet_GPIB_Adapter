@@ -33,5 +33,11 @@
 // setting to 1 messes up the serial menu a bit
 #define LOG_VXI_DETAILS 1
 
+// if you acticate this, the serial menu will be messier. 
+// Only activate this when you want to see memory usage 
+// and other details in auto refresh on the console.
+// #define LOG_STATS_ON_CONSOLE
 
-
+// EEPROM use: 
+// Writing the 24AA256 is somehow broken, so we can also write via the GPIB configuration
+#define AR488_GPIBconf_EXTEND

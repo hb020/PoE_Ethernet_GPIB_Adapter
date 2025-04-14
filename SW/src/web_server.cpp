@@ -69,7 +69,7 @@ void BasicWebServer::loop(int nrConnections) {
             // character) and the line is blank, the http request has ended,
             // so you can send a reply
             if (c == '\n' && currentLineIsBlank[i]) {
-              sendResponse(&clients[i], nrConnections);
+              sendResponse(clients[i], nrConnections);
               delay(10); // yield to send reply
               clients[i].stop();
               break;

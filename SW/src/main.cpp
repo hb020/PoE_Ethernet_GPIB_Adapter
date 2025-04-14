@@ -123,7 +123,11 @@ class SCPI_handler : public SCPI_handler_interface {
         debugPort.print(F("SCPI write: "));
         printBuf(data, len);
 #else
-        if (address == 0) return;
+        if (address == 0) {
+            // maybe we need to address a device directly on the bus
+            address = gpibBus.cfg.caddr;
+        }
+        if (address == 0) return; // if controller: no writing to the bus
 
         // Send data to the GPIB bus
         gpibBus.cfg.paddr = address;
@@ -141,6 +145,10 @@ class SCPI_handler : public SCPI_handler_interface {
         *len = snprintf(data, max_len, "SCPI response");
         return true;
 #else
+        if (address == 0) {
+            // maybe we need to address a device directly on the bus
+            address = gpibBus.cfg.caddr;
+        }
         // dummy reply if I am addressed
         if (address == 0) {
             strncpy(data, DEVICE_NAME, max_len);
@@ -195,7 +203,7 @@ static RPC_Bind_Server rpc_bind_server(vxi_server);  ///< The RPC_Bind_Server fo
  * It also sets up the EEPROM and GPIB bus configuration. The function tries to wait for DHCP to assign an IP address.
  */
 void setup() {
-    setup_serial_ui_and_led(F("Starting socket servers and GPIB interface..."));
+    setup_serial_ui_and_led(F(DEVICE_NAME));
 
     // Disable the watchdog (needed to prevent WDT reset loop)
 #ifdef __AVR__
@@ -208,22 +216,42 @@ void setup() {
 
     debugPort.print(F("MAC Address: "));
     printHexArray(macAddress, 6);
-    debugPort.println(F("Waiting for DHCP..."));
+
+    // Configure and start GPIB interface
+    debugPort.println(F("Configuring and Starting GPIB bus..."));
+    setup_gpibBusConfig();
 
     // Initialise dataport, serial or ethernet as defined
-    IPAddress ip = (0, 0, 0, 0);
+#ifdef AR488_GPIBconf_EXTEND
+    uint8_t *ipbuff = gpibBus.cfg.ip;
+#else    
+    uint8_t ipbuff[4];  
+    eeprom.getIPAddress(ipbuff);
+    gpibBus.cfg.caddr = eeprom.getDefaultInstrument();
+#endif
+    if (gpibBus.cfg.caddr != 0) {
+        if (gpibBus.cfg.caddr > 30) {
+            gpibBus.cfg.caddr = 0;
+        }
+        debugPort.print(F("The devices's default address points to GPIB address "));
+        debugPort.println(gpibBus.cfg.caddr);
+    }
+    // Set up the IP address    
+    IPAddress ip = IPAddress(ipbuff);
     Ethernet.init(7);
     if (ip == IPAddress(0, 0, 0, 0)) {
-        // Use DHCP
+        debugPort.println(F("Waiting for DHCP..."));
         Ethernet.begin(macAddress);
     } else {
         // Use static IP
+        // debugPort.print(F("Using IP address "));
+        // debugPort.println(ip);
         Ethernet.begin(macAddress, ip);
     }
 
     // print the IP address
     setup_ipaddress_surveillance_and_show_address();
-    // for now, just ignore if we have a good address
+    // for now, just ignore if we have a good address via FHCP
 
     // This would be the place to add mdns, but none of the main mdns libraries support the present ethernet library
 #ifdef INTERFACE_VXI11
@@ -234,9 +262,7 @@ void setup() {
     rpc_bind_server.begin(LOG_VXI_DETAILS);
     debugPort.println(F("VXI-11 servers started"));
 #endif
-    // Configure and start GPIB interface
-    debugPort.println(F("Configuring and Starting GPIB bus..."));
-    setup_gpibBusConfig();
+
 
 #ifdef INTERFACE_PROLOGIX
     debugPort.println(F("Starting Prologix TCP server..."));

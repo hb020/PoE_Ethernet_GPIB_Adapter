@@ -29,11 +29,12 @@ The file was renamed to 'prologix_server.cpp'. The code sections that were modif
 
 ## AR488_Eeprom.cpp and AR488_Eeprom.h
 
-Not modified
+no changes
 
 ## AR488_GPIBbus.cpp and AR488_GPIBbus.h
 
 * Changed `void sendData(char *data, uint8_t dsize);` into `void sendData(const char *data, uint8_t dsize);`  (const)
+* Added a couple of sections with `#ifdef AR488_GPIBconf_EXTEND`, in order to store the IP address in the config.
 
 ## AR488_Layouts.cpp and AR488_Layouts.h
 

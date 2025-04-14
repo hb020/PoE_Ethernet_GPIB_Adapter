@@ -48,6 +48,12 @@ void _24AA256UID::getUniqueID(uint8_t* uid) {
 
 void _24AA256UID::getIPAddress(uint8_t* ip) {
     readBytes(IP_ADDRESS_START, ip, 4);
+    if (ip[0] == 255 && ip[1] == 255 && ip[2] == 255 & ip[3] == 255) {
+        ip[0] = 0;
+        ip[1] = 0;
+        ip[2] = 0;
+        ip[3] = 0;
+    }
     printDebug("IP Address read.");
 }
 
@@ -82,7 +88,7 @@ void _24AA256UID::writeByte(uint16_t address, uint8_t data) {
     Wire.beginTransmission(deviceAddress);
     Wire.write((address >> 8) & 0xFF);
     Wire.write(address & 0xFF);
-    Wire.write(data);
+    Wire.write(data & 0xFF);
     Wire.endTransmission();
     delay(10);
     printDebug("Byte written.");
@@ -105,7 +111,7 @@ void _24AA256UID::writeBytes(uint16_t address, const uint8_t* buffer, size_t len
     Wire.write((address >> 8) & 0xFF);
     Wire.write(address & 0xFF);
     for (int i = 0; i < length; i++) {
-        writeByte(address + i, buffer[i]);
+        Wire.write(buffer[i] & 0xFF);
     }
     Wire.endTransmission();
     delay(10);

@@ -14,8 +14,11 @@
 /*********************************************/
 /***** GPIB COMMAND & STATUS DEFINITIONS *****/
 /***** vvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvv *****/
-
+#ifdef AR488_GPIBconf_EXTEND
+#define GPIB_CFG_SIZE 87
+#else
 #define GPIB_CFG_SIZE 83
+#endif
 
 /***** Debug Port *****/
 #ifdef DB_SERIAL_ENABLE
@@ -155,6 +158,9 @@ public:
       uint32_t serial;  // Serial number
       uint8_t idn;      // Send ID in response to *idn? 0=disable, 1=send name; 2=send name+serial
       uint8_t hflags;   // Handshaking indicator flags
+#ifdef AR488_GPIBconf_EXTEND      
+      uint8_t ip[4];    // IP address
+#endif
     };
     uint8_t db[GPIB_CFG_SIZE];
   };

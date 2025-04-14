@@ -11,6 +11,7 @@
 #include "web_server.h"
 BasicWebServer webServer;
 #endif
+#include <avr/wdt.h>
 
 #ifndef DEBUG_ENABLE
 #error "DEBUG_ENABLE must be defined"
@@ -21,43 +22,56 @@ BasicWebServer webServer;
 // The menu handler is very basic. While handling a command, it is blocking.
 SerialMenuCmd myMenu;
 
+#ifdef AR488_GPIBconf_EXTEND
+#include "AR488_GPIBbus.h"
+#include "AR488_Eeprom.h"
+extern GPIBbus gpibBus;
+#else
 extern _24AA256UID eeprom;
+#endif
 
 void cmd1_DoIt(void) {
     String s;
     IPAddress ip;
-    uint8_t ipbuff[4];
 
     ip = Ethernet.localIP();
-    debugPort.print(F("Current IP Address: "));
+    debugPort.print(F("\nCurrent IP Address: "));
     debugPort.println(ip);
 
     debugPort.print(F("Configured IP Address: "));
+#ifdef AR488_GPIBconf_EXTEND
+    uint8_t *ipbuff = gpibBus.cfg.ip;
+#else    
+    uint8_t ipbuff[4];  
     eeprom.getIPAddress(ipbuff);
+#endif
     ip = IPAddress(ipbuff);
-    debugPort.println(ip);
     if ((uint32_t)(ip) == 0) {
-        debugPort.println(F("to be obtained via DHCP (set to 0.0.0.0)"));
+        debugPort.println(F("via DHCP."));
     } else {
         debugPort.println(ip);
     }
 
     debugPort.print(F("Enter the desired IP address (0.0.0.0 means: use DHCP): "));
-    if (myMenu.getStrValue(s)) {
+    if (myMenu.getStrOfChar(s)) {
         if (ip.fromString(s.c_str())) {
-            debugPort.print(F("IP Address will be set to: "));
+            debugPort.print(F("\nIP Address will be set to: "));
             debugPort.println(ip);
             debugPort.println(F("You will need to reboot now."));
             ipbuff[0] = ip[0];
             ipbuff[1] = ip[1];
             ipbuff[2] = ip[2];
             ipbuff[3] = ip[3];
+#ifdef AR488_GPIBconf_EXTEND            
+            epWriteData(gpibBus.cfg.db, GPIB_CFG_SIZE);
+#else
             eeprom.setIPAddress(ipbuff);
+#endif
         } else {
-            debugPort.println(F("Invalid IP address format."));
+            debugPort.println(F("\nInvalid IP address format."));
         }
     } else {
-        debugPort.println(F("Command aborted."));
+        debugPort.println(F("\nCommand aborted."));
     }
 }
 
@@ -66,35 +80,36 @@ void cmd2_DoIt(void) {
     String s;
     uint8_t inst;
 
-    inst = eeprom.getDefaultInstrument();
-    debugPort.print(F("Current default instrument address: "));
+    inst = gpibBus.cfg.caddr;
+    debugPort.print(F("\nCurrent default instrument address: "));
     debugPort.println((int)inst);
     debugPort.print(F("Enter the desired default instrument address (0-30), with 0 being the gateway: "));
     if (myMenu.getStrValue(s)) {
         inst = s.toInt();
         if (inst >= 0 && inst <= 30) {
-            debugPort.print(F("Default Instrument address will be set to: "));
+            debugPort.print(F("\nDefault Instrument address will be set to: "));
             debugPort.println(inst);
             debugPort.println(F("You will need to reboot now."));
+            gpibBus.cfg.caddr = inst;
+#ifdef AR488_GPIBconf_EXTEND
+            epWriteData(gpibBus.cfg.db, GPIB_CFG_SIZE);
+#else
             eeprom.setDefaultInstrument(inst);
+#endif
         } else {
-            debugPort.println(F("Invalid instrument address."));
+            debugPort.println(F("\nInvalid instrument address."));
         }
     } else {
-        debugPort.println(F("Command aborted."));
+        debugPort.println(F("\nCommand aborted."));
     }
 }
 #endif
 
-void cmd9_DoIt(void) {
-    // TODO Reboot
-}
 
 tMenuCmdTxt txt1_DoIt[] = "1 - Set IP address";
 #ifdef INTERFACE_VXI11
 tMenuCmdTxt txt2_DoIt[] = "2 - Set default instrument address";
 #endif
-tMenuCmdTxt txt9_DoIt[] = "9 - Reboot";
 tMenuCmdTxt txt_DisplayMenu[] = "? - Menu";
 tMenuCmdTxt txt_Prompt[] = "";
 
@@ -103,7 +118,6 @@ stMenuCmd list[] = {
 #ifdef INTERFACE_VXI11    
     {txt2_DoIt, '2', cmd2_DoIt},
 #endif
-    {txt9_DoIt, '9', cmd9_DoIt},
     {txt_DisplayMenu, '?', []() { myMenu.ShowMenu();
         myMenu.giveCmdPrompt();}}};
 
@@ -296,7 +310,7 @@ bool onceASecond(bool start = false) {
     }
 
     if (millis() - lastRefreshTime >= REFRESH_INTERVAL) {
-        lastRefreshTime += REFRESH_INTERVAL;
+        lastRefreshTime = millis();
         return true;
     } else {
         return false;
@@ -308,6 +322,7 @@ bool onceASecond(bool start = false) {
 void setup_serial_ui_and_led(const __FlashStringHelper* helloStr) {
     setup_led();
     startDebugPort();
+    delay(100); // wait for the serial port to be ready
     debugPort.println(helloStr);
     display_freeram();
     debugPort.println("");
@@ -371,11 +386,13 @@ void loop_serial_ui_and_led(int nrConnections) {
             LEDRed();
         }
 
+#ifdef LOG_STATS_ON_CONSOLE
         debugPort.print('\r');
         display_freeram();
         debugPort.print(F(", Clients: "));
         debugPort.print(nrConnections);
         debugPort.print('\r');
+#endif
         /*
         // LED test
         counter++;
