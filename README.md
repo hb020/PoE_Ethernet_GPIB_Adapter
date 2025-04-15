@@ -1,9 +1,5 @@
 
-# PoE Ethernet GPIB Adapter
-
-GOAL OF THIS FORK: add pyvisa compatibility, be it RAW or VXI-11.2
-
-STATUS OF THIS FORK: Should be ready for PR
+# PoE Ethernet GPIB Adapter, with Prologix or VXI-11.2
 
 ## PoE-powered GPIB Adapter with Ethernet and USB-C Support
 
@@ -68,9 +64,9 @@ Example: `TCPIP::192.168.7.105::gpib,2::INSTR` for instrument with GPIB address 
 
 ### VXI-11.2 compatibility
 
-With the limited resources, this device is meant to work with for example pyvisa. It is not a reference implementation, and lacks the following advanced features:
+With the limited resources, this device is meant to work with the most common tools, like for example pyVisa. It is not a full implementation, and lacks the following advanced features:
 
-- secondary instrument addresses (this is just under construction in AR488)
+- secondary instrument addresses
 - async VXI-11 operations
 - instrument locking via VXI-11
 - VXI-11 interrupts
@@ -132,5 +128,4 @@ This project is licensed under the GPL V3. See the [LICENSE](LICENSE) file for d
 
 ## Acknowledgements
 
-- A huge thanks to the [AR488 project](https://github.com/Twilight-Logic/AR488), run by [Twilight-Logic](https://github.com/Twilight-Logic) and its community contributors. The current software is a fork of AR488.
-
+- A huge thanks to the [AR488 project](https://github.com/Twilight-Logic/AR488), run by [Twilight-Logic](https://github.com/Twilight-Logic) and its community contributors. The current software is a fork of AR488. For more information about this, see [here](SW/README.md).
