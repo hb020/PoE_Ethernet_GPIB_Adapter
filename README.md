@@ -8,8 +8,8 @@ STATUS OF THIS FORK: WIP
 This code can produce either a VXI-11.2 device, or a Prologix device (the ROM is not big enough for both at the same time, although the code is compatible with cohabitation)
 
 * Switching between VXI-11 and prologix is done at compile time. If [config.h](/SW/src/config.h) `#define INTERFACE_PROLOGIX` or compiler option `-DINTERFACE_PROLOGIX` is used, the firmware produced is for prologix.
-* VXI-11.2 server works, is robust and fast. (with limitations: no support for device sub-addresses (is WIP in AR488), and no interrupts). Supports up to 30 client-instrument combinations. Should be enough. Requires no config nor eeprom, and is discoverable over the network.
-* Prologix server works as before.
+* VXI-11.2 server works, is robust and fast. (with limitations: no support for device sub-addresses (is WIP in AR488), and no interrupts). Supports up to 7 client-instrument combinations. Should be enough. Requires no config nor eeprom, and is discoverable over the network. The limit of 7 is because of MAX_SOCK_NUM, which is 8 for the W5500 chip. And we need to leave 1 for the port mapper.
+* Prologix server works as before, and will not have that limit of 8 instruments.
 * the LED now indicates different states: blue for waiting for DHCP, red for error in DHCP, green flashing for idle, green/blue flashing for busy
 * prepared for a serial console, only logs to it right now.
 * mdns is not possible. tried multiple libraries, they do not work for this type of AVR
@@ -17,8 +17,16 @@ This code can produce either a VXI-11.2 device, or a Prologix device (the ROM is
 * fully integrated with platformio (but can be compiled also outside of platformio)
 * RAW server is abandoned, as it would need many more resources.
 * It is based upon the latest AR488 (v0.53.03). Documented the adaptations in the document [Relation_to_AR488](/SW/src/Relation_to_AR488.md).
-* Added a basic web server with stats and info (just because I can)
+* Added a basic web server with stats and info (just because I can). It will however require 1 socket, so if you want VXI-11 and have more than 6 instruments connected, you should disable the web server.
 * IP address and default instrument address can be set via serial console.
+
+## The number of instruments you can connect
+
+VXI-11 is easier to integrate with many tools, but does have an impact on resource use on the gateway. The Ethernet chip can only maintain 8 network sockets, and each instrument requires a separate socket with VXI-11. Prologix uses only 1 socket, no matter the number of instruments. This means the following:
+
+* if want to connect more than 7 instruments, use prologix
+* if you use VXI-11 and are close to 7, then disable or do not use the web server.
+
 
 TODO:
 
