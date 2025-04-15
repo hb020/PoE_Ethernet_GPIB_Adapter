@@ -3,7 +3,7 @@
 
 GOAL OF THIS FORK: add pyvisa compatibility, be it RAW or VXI-11.2
 
-STATUS OF THIS FORK: Software should be OK, working on documentation
+STATUS OF THIS FORK: Should be ready for PR
 
 ## PoE-powered GPIB Adapter with Ethernet and USB-C Support
 
