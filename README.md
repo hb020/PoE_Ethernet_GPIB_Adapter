@@ -40,7 +40,7 @@ At work, this has been solved elegantly using commercial Ethernet adapters, each
 
 All design goals have been met[^2]. The current unit price is approximately $45 USD when ordering parts for 20 units. Prices increase for smaller batch sizes.
 
-[^2] GPIB commands over USB-C is Work In Progress.
+[^2]: GPIB commands over USB-C is Work In Progress.
 
 In my home lab, I assign each device a static IP address based on its MAC address and run a local DNS server to provide easy-to-remember domain names, making the adapter simple and intuitive to use.
 
