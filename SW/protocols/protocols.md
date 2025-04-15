@@ -13,13 +13,15 @@ Suppose N is the number of instruments to be represented:
 
 ## prologix
 
-not suppored by pyvisa
+not (yet) suppored by pyvisa
 
 ## RAW
 
 Example of connection string:
 
 TCPIP::192.168.1.105::[port number]::SOCKET
+
+Requires 1 server, and 1 client socket per instrument. Multiple commands tend to be sent concatenated in 1 network packet, unless a question is sent.
 
 ## VXI-11.2
 
@@ -30,53 +32,10 @@ Example of connection string:
 
 gpib0 or inst0: default or only, hpibN or instN: others
 
-Requires 3 servers:
+Requires 3 servers, and 1 client socket per instrument:
 
 * port mappers on UDP and TCP that point to the VXI-11 RPC server
 * the VXI-11 RPC server. VXI-11 consists of 3 separate RPC programs with the numeric identifiers: 0x0607AF (DEVICE_CORE), 0x0607B0 (DEVICE_ASYNC) and 0x0607B1 (DEVICE_INTR).
 * you may also add mDNS
 
 For compatibility with basic pyvisa use, you only need DEVICE_CORE, but the guidelines say you should also support the others.
-
-While in theory one could re-use an existing VXI-11 RPC server socket, thereby only requiring 3 socket connections, 
-pyvisa requires 1 client socket per device. It doesn't just use create_link on the same socket with a different device name.
-
-Other inspiration: See https://github.com/coburnw/python-vxi11-server
-Uses TCPServer and threading.
-
-Maybe go multiplexing? Because that is what arduino will do. TODO: will it?
-
-If we can make it work, the device will NOT support:
-
-* secondary instrument addresses
-* more than 1 client per instrument
-* async VXI-11 operations
-* instrument locking via VXI-11
-* VXI-11 interrupts
-* the VXI-11 abort channel
-
-# Free SRAM usage investigations
-
-| Type | Device startup | Services started | Client connected | GPIB Comms |
-|---|---|---|---|---|
-| Prologix | 5243 | 5180 (-63) | 5063 (-117) | 5063 (-0) |
-| RAW 4, echo | 5163 | 4911 (-252) | 4911 (0) | - as long as the buffer is/was, since it is a String |
-
-# Interaction between ethernet and GPIB
-
-All based on `gpibBus.isController() == true`
-
-## Write data to GPIB
-
-```cpp
-if (!gpibBus.haveAddressedDevice()) gpibBus.addressDevice(gpibBus.cfg.paddr, 0xFF, TOLISTEN);
-gpibBus.sendData(buffr, dsize);
-gpibBus.unAddressDevice();
-```
-
-## Read data from GPIB
-
-```cpp
-gpibBus.addressDevice(gpibBus.cfg.paddr, 0xFF, TOTALK);  // tel device 'paddr' to talk. If you do this and the device has nothing to say, you might get an error.
-gpibBus.receiveData(*dataPort, readWithEoi, readWithEndByte, endByte); // get the data from the bus and send out
-```

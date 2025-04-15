@@ -66,6 +66,16 @@ Example: `TCPIP::192.168.7.105::gpib,2::INSTR` for instrument with GPIB address 
 
 [^1]: controller, gateway, adapter: different names for the same.
 
+### VXI-11.2 compatibility
+
+With the limited resources, this device is meant to work with for example pyvisa. It is not a reference implementation, and lacks the following advanced features:
+
+- secondary instrument addresses (this is just under construction in AR488)
+- async VXI-11 operations
+- instrument locking via VXI-11
+- VXI-11 interrupts
+- the VXI-11 abort channel
+
 ---
 
 ## The number of instruments you can connect
