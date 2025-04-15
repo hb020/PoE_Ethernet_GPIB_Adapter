@@ -3,47 +3,7 @@
 
 GOAL OF THIS FORK: add pyvisa compatibility, be it RAW or VXI-11.2
 
-STATUS OF THIS FORK: WIP
-
-This code can produce either a VXI-11.2 device, or a Prologix device (the ROM is not big enough for both at the same time, although the code is compatible with cohabitation)
-
-* Switching between VXI-11 and prologix is done at compile time. If [config.h](/SW/src/config.h) `#define INTERFACE_PROLOGIX` or compiler option `-DINTERFACE_PROLOGIX` is used, the firmware produced is for prologix.
-* VXI-11.2 server works, is robust and fast. (with limitations: no support for device sub-addresses (is WIP in AR488), and no interrupts). Supports up to 7 client-instrument combinations. Should be enough. Requires no config nor eeprom, and is discoverable over the network. The limit of 7 is because of MAX_SOCK_NUM, which is 8 for the W5500 chip. And we need to leave 1 for the port mapper.
-* Prologix server works as before, and will not have that limit of 8 instruments.
-* the LED now indicates different states: blue for waiting for DHCP, red for error in DHCP, green flashing for idle, green/blue flashing for busy
-* prepared for a serial console, only logs to it right now.
-* mdns is not possible. tried multiple libraries, they do not work for this type of AVR
-* loads of RAM still available (4k+)
-* fully integrated with platformio (but can be compiled also outside of platformio)
-* RAW server is abandoned, as it would need many more resources.
-* It is based upon the latest AR488 (v0.53.03). Documented the adaptations in the document [Relation_to_AR488](/SW/src/Relation_to_AR488.md).
-* Added a basic web server with stats and info (just because I can). It will however require 1 socket, so if you want VXI-11 and have more than 6 instruments connected, you should disable the web server.
-* IP address and default instrument address can be set via serial console.
-
-## The number of instruments you can connect
-
-The GPIB bus protocol itself allows up to 30 instruments. This does not mean you can connect 30 instruments to the gateway, as the gateway device has its electrical limits, depending on the length of the cables and instruments themselves. And also the software has its limits.
-
-The prologix service will accept as many instruments as the gateway hardware can drive reliably.
-
-The VXI-11 service is easier to integrate with many tools, but it consumes more resources on the gateway. The Ethernet chip can only maintain a limited number of network sockets, and each instrument requires a separate socket with VXI-11. Prologix uses only 1 socket, no matter the number of instruments. This means that regardless of the limitations of the hardware, there is a limit to the number of instruments you can connect to via VXI-11 compatible client software:
-
-* up to 4 instruments: no restriction
-* 5 instruments: only if you do not use the web server
-* 6 instruments: only if you disable the web server (use compile option `-DDISABLE_WEB_SERVER`)
-* 7 or more: not possible via VXI-11
-
-Also, be aware that the GPIB bus is a shared bus. Do not try to control instruments on the bus from different software clients at the same time. VXI-11 is somewhat more forgiving in this matter, but the prologix service simply doesn't allow multiple connections.
-
-## TODO
-
-* document
-* do PR
-
-
-TODO that I cannot do, would need your help with that:
-* test with other instruments. Right now I do reads that are equivalent to "++read eoi". Might not be good for all instruments.
-
+STATUS OF THIS FORK: Software should be OK, working on documentation
 
 ## PoE-powered GPIB Adapter with Ethernet and USB-C Support
 
@@ -53,7 +13,7 @@ TODO that I cannot do, would need your help with that:
 
 The **PoE Ethernet GPIB Adapter** is designed to interface test equipment with GPIB / HPIB / IEEE-488 interfaces.
 
-The primary goal of this project is to provide an easy solution to connect multiple GPIB-equipped instruments over Ethernet without excessive cabling.
+The primary goal of this project is to provide an easy solution to connect multiple GPIB-equipped instruments over Ethernet without excessive cabling. It can, at choice, use the Prologix protocol or support VXI-11.2 (VISA).
 
 ---
 
@@ -93,11 +53,64 @@ Project's documentation:
 
 ---
 
+## VXI-11 or Prologix
+
+This code can produce either a VXI-11.2 device, or a Prologix device (the ROM is not big enough for both at the same time, although the code is compatible with cohabitation). Switching between VXI-11 and Prologix is done at compile time. If compiler option `-DINTERFACE_PROLOGIX` is used, the firmware produced is for Prologix.
+
+VXI-11.2 allows discovery over the network, and uses the following VISA connection strings:
+
+- Controller[^1]: TCPIP::{IP address}::INSTR (unless you have set the default instrument address to something else than 0)
+- Instruments: TCPIP::{IP address}::gpib,*N*::INSTR or ...::inst*N*::INSTR, where *N* is their address on the GPIB bus (1..30)
+
+[^1]: controller, gateway, adapter: different names for the same.
+
+---
+
+## The number of instruments you can connect
+
+The GPIB bus protocol itself allows up to 30 instruments. This does not mean you can connect 30 instruments to the gateway, as the gateway device has its electrical limits, depending on the length of the cables and instruments themselves. And also the software has its limits.
+
+The Prologix service will accept as many instruments as the gateway hardware can drive reliably.
+
+The VXI-11 service is easier to integrate with many tools, but it consumes more resources on the gateway. The Ethernet chip can only maintain a limited number of network sockets, and each instrument requires a separate socket with VXI-11. Prologix uses only 1 socket, no matter the number of instruments. This means that regardless of the limitations of the hardware, there is a limit to the number of instruments you can connect to via VXI-11 compatible client software:
+
+- up to 4 instruments: no restriction
+- 5 instruments: only if you do not use the web server
+- 6 instruments: only if you disable the web server (use the compile option `-DDISABLE_WEB_SERVER`)
+- 7 or more: not possible via VXI-11
+
+Also, be aware that the GPIB bus is a shared bus. Do not try to control instruments on the bus from different software clients at the same time. VXI-11 is somewhat more forgiving in this matter, but the prologix service simply doesn't allow multiple connections.
+
+---
+
+## The User Interface of the device
+
+There are 3 parts:
+
+- the **LED**. It indicates different states: blue for waiting for DHCP, red for error in DHCP, green flashing for idle, green/blue flashing for busy
+- the **Web Server** (on port 80): it shows some help texts and the number of connected clients. It is not interactive.
+- the **serial console** (via USB): This console shows startup information, ports used, and has a small menu. 
+
+### The serial menu
+
+This menu is rather basic. Be aware that it requires 'enter' for each command.
+
+It has the following options:
+
+- Setting of IP address. By default, the device starts with DHCP. You can however force a fixed IP address.
+- Setting of the default instrument address (only with VXI-11, as Prologix has its own command for that), By default, this is 0, meaning: the gateway itself. But if you only have 1 instrument connected, or want to designate a "preferred" instrument, you can set it to the address of any instrument on the bus. That way, the gateway becomes transparent, and you can use the default (and the discoverable) VISA connection string to address that instrument.
+
+---
+
 ## Project files
 
 Latest version is avaiable under [Releases](https://github.com/Kofen/PoE_Ethernet_GPIB_Adapter/releases)
 
 And all the source code for all the parts should be in their respective folders in the repro. If anything is missing, let me know!
+
+## How to compile
+
+The easiest is for compilation with PlatformIO, from the [SW](/SW) directory.
 
 ## License
 
