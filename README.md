@@ -91,6 +91,8 @@ The VXI-11 service is easier to integrate with many tools, but it consumes more 
 - 6 instruments: only if you disable the web server (use the compile option `-DDISABLE_WEB_SERVER`)
 - 7 or more: not possible via VXI-11
 
+This does not mean that you cannot physically connect more instruments to the gateway, it just means that you cannot connect to more of them, via your client software, at the same time.
+
 Also, be aware that the GPIB bus is a shared bus. Do not try to control instruments on the bus from different software clients at the same time. VXI-11 is somewhat more forgiving in this matter, but the prologix service simply doesn't allow multiple connections.
 
 ---
