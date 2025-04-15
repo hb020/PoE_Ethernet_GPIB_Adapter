@@ -72,6 +72,8 @@ With the limited resources, this device is meant to work with the most common to
 - VXI-11 interrupts
 - the VXI-11 abort channel
 
+It is discoverable via UDP, but there is no publication via mDNS (yet).
+
 ---
 
 ## The number of instruments you can connect
@@ -108,7 +110,7 @@ This menu is rather basic. Be aware that it requires 'enter' for each command.
 It has the following options:
 
 - Setting of IP address. By default, the device starts with DHCP. You can however force a fixed IP address.
-- Setting of the default instrument address (only with VXI-11, as Prologix has its own command for that), By default, this is 0, meaning: the gateway itself. But if you only have 1 instrument connected, or want to designate a "preferred" instrument, you can set it to the address of any instrument on the bus. That way, the gateway becomes transparent, and you can use the default (and the discoverable) VISA connection string to address that instrument.
+- Setting of the default instrument address (only with VXI-11, as Prologix has its own command for that). The default is 0, meaning: the gateway itself. If you only have 1 instrument connected, or want to designate a "preferred" instrument, you can set it to the address of any instrument on the bus. That way, the gateway becomes transparent, and you can use the default (and the discoverable) VISA connection string to address that instrument.
 
 ---
 
