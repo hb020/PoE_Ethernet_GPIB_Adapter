@@ -30,7 +30,7 @@ At work, this has been solved elegantly using commercial Ethernet adapters, each
 2. Support Power over Ethernet (PoE) to minimize cable clutter.
 3. Include USB-C power as an alternative if PoE is unavailable.
 4. Enable GPIB communication over both Ethernet and USB-C interfaces.
-5. Use the same communication protocol as existing commercial units (via Telnet).
+5. Use the same communication protocol as existing commercial units.
 6. Minimize radiated and conducted noise to avoid interference in test environments.
 7. Include a simple, easy-to-print 3D-printed enclosure to keep costs low.
 
@@ -38,7 +38,9 @@ At work, this has been solved elegantly using commercial Ethernet adapters, each
 
 ## Results
 
-All design goals have been met. The current unit price is approximately $45 USD when ordering parts for 20 units. Prices increase for smaller batch sizes.
+All design goals have been met[^2]. The current unit price is approximately $45 USD when ordering parts for 20 units. Prices increase for smaller batch sizes.
+
+[^2] GPIB commands over USB-C is Work In Progress.
 
 In my home lab, I assign each device a static IP address based on its MAC address and run a local DNS server to provide easy-to-remember domain names, making the adapter simple and intuitive to use.
 
