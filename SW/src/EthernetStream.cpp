@@ -17,6 +17,8 @@ bool EthernetStream::begin(uint32_t port) {
 }
 
 void EthernetStream::checkClient() {
+    // This uses the 'server.available()' method. A client will become available once I have received data. 
+    // You can also only have one client this way
     if (client && !client.connected()) {
         client.stop();
         client = EthernetClient();

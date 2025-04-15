@@ -69,9 +69,10 @@
 // External EEPROM with MAC and unique ID.
 _24AA256UID eeprom(0x50, true);
 
-#ifdef INTERFACE_VXI11
 // GPIB bus object
 extern GPIBbus gpibBus;
+
+#ifdef INTERFACE_VXI11
 
 #pragma region SCPI handler
 
@@ -265,7 +266,10 @@ void setup() {
 
 
 #ifdef INTERFACE_PROLOGIX
-    debugPort.println(F("Starting Prologix TCP server..."));
+#define STR_HELPER(x) #x
+#define STR(x) STR_HELPER(x)
+
+    debugPort.println(F("Starting Prologix TCP server on port " STR(PROLOGIX_PORT) "..."));
     // delay(1000);  // wait for message to be printed
     setup_prologix();
 #endif

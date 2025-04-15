@@ -337,8 +337,8 @@ void end_of_setup(void) {
         LEDGreen();
     }
 #ifdef USE_WEBSERVER
-    debugPort.println(F("Starting Web server..."));
-    webServer.begin();
+    debugPort.println(F("Starting Web server on port 80..."));
+    webServer.begin(LOG_WEB_DETAILS);
 #endif
 
 #ifdef USE_SERIALMENU
@@ -374,6 +374,9 @@ void loop_serial_ui_and_led(int nrConnections) {
 #endif
 
     if (onceASecond(false)) {
+        // maintain DHCP
+        Ethernet.maintain();
+        // Check if the IP address has changed
         if (ip_address_is_wrong) {
             debugPort.print(F("IP Address "));
             debugPort.print(Ethernet.localIP());

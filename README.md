@@ -22,17 +22,24 @@ This code can produce either a VXI-11.2 device, or a Prologix device (the ROM is
 
 ## The number of instruments you can connect
 
-VXI-11 is easier to integrate with many tools, but does have an impact on resource use on the gateway. The Ethernet chip can only maintain 8 network sockets, and each instrument requires a separate socket with VXI-11. Prologix uses only 1 socket, no matter the number of instruments. This means the following:
+The GPIB bus protocol itself allows up to 30 instruments. This does not mean you can connect 30 instruments to the gateway, as the gateway device has its electrical limits, depending on the length of the cables and instruments themselves. And also the software has its limits.
 
-* if want to connect more than 7 instruments, use prologix
-* if you use VXI-11 and are close to 7, then disable or do not use the web server.
+The prologix service will accept as many instruments as the gateway hardware can drive reliably.
 
+The VXI-11 service is easier to integrate with many tools, but it consumes more resources on the gateway. The Ethernet chip can only maintain a limited number of network sockets, and each instrument requires a separate socket with VXI-11. Prologix uses only 1 socket, no matter the number of instruments. This means that regardless of the limitations of the hardware, there is a limit to the number of instruments you can connect to via VXI-11 compatible client software:
 
-TODO:
+* up to 4 instruments: no restriction
+* 5 instruments: only if you do not use the web server
+* 6 instruments: only if you disable the web server (use compile option `-DDISABLE_WEB_SERVER`)
+* 7 or more: not possible via VXI-11
 
-* webserver has issues
+Also, be aware that the GPIB bus is a shared bus. Do not try to control instruments on the bus from different software clients at the same time. VXI-11 is somewhat more forgiving in this matter, but the prologix service simply doesn't allow multiple connections.
+
+## TODO
+
 * document
-* add more tests
+* do PR
+
 
 TODO that I cannot do, would need your help with that:
 * test with other instruments. Right now I do reads that are equivalent to "++read eoi". Might not be good for all instruments.

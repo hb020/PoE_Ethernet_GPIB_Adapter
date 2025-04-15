@@ -48,7 +48,7 @@ uint32_t VXI_Server::allocate()
  * @param port TCP port to listen on
  * @param debug true when debug messages are to be printed
  */
-void VXI_Server::begin(uint32_t port, bool debug)
+void VXI_Server::begin(uint32_t port, bool debug = false)
 {
     this->vxi_port = port;
     this->debug = debug;
@@ -81,6 +81,9 @@ void VXI_Server::begin(uint32_t port, bool debug)
  */
 int VXI_Server::loop()
 {
+    // This is a TCP server based on 'server.accept()', meaning I must handle the lifecycle of the client 
+    // It is blocking for input and output
+
     // close any clients that are not connected
     for (int i = 0; i < MAX_VXI_CLIENTS; i++) {
         if (clients[i] && !clients[i].connected()) {
@@ -90,36 +93,42 @@ int VXI_Server::loop()
                 debugPort.print((uint32_t)vxi_port);
                 debugPort.print(F(" of slot "));
                 debugPort.print(i);
-                debugPort.println();
+                debugPort.print(F(" from remote port "));
+                debugPort.println(clients[i].remotePort());
             }               
         }
     }
 
-    // check if a new client is available
-    EthernetClient newClient = tcp_server->accept();
-    if (newClient) {
-        bool found = false;
-        for (int i = 0; i < MAX_VXI_CLIENTS; i++) {
-            if (!clients[i]) {
-                clients[i] = newClient;
-                found = true;
-                if (debug) {
-                    debugPort.print(F("New VXI connection on port "));
-                    debugPort.print((uint32_t)vxi_port);
-                    debugPort.print(F(" in slot "));
-                    debugPort.print(i);
-                    debugPort.println();
+    if (have_free_connections()) {
+        // check if a new client is available
+        EthernetClient newClient = tcp_server->accept();
+        if (newClient) {
+            bool found = false;
+            for (int i = 0; i < MAX_VXI_CLIENTS; i++) {
+                if (!clients[i]) {
+                    clients[i] = newClient;
+                    found = true;
+                    if (debug) {
+                        debugPort.print(F("New VXI connection on port "));
+                        debugPort.print((uint32_t)vxi_port);
+                        debugPort.print(F(" in slot "));
+                        debugPort.print(i);
+                        debugPort.print(F(" from remote port "));
+                        debugPort.println(newClient.remotePort());
+                    }
+                    break;
                 }
-                break;
             }
-        }
-        if (!found) {
-            if (debug) {
-                debugPort.print(F("VXI connection limit reached on port "));
-                debugPort.print((uint32_t)vxi_port);
-                debugPort.println();
+            if (!found) {
+                // shouldn't happen, but still....
+                if (debug) {
+                    debugPort.print(F("VXI connection limit reached on port "));
+                    debugPort.print((uint32_t)vxi_port);
+                    debugPort.print(F(" from remote port "));
+                    debugPort.println(newClient.remotePort());
+                }
+                newClient.stop();
             }
-            newClient.stop();
         }
     }
 
@@ -142,7 +151,8 @@ int VXI_Server::loop()
                     debugPort.print((uint32_t)vxi_port);
                     debugPort.print(F(" of slot "));
                     debugPort.print(i);
-                    debugPort.println();
+                    debugPort.print(F(" from remote port "));
+                    debugPort.println(clients[i].remotePort());
                 }
                 clients[i].stop();
             }

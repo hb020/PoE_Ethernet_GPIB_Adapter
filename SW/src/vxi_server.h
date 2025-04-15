@@ -41,7 +41,7 @@ class VXI_Server
     ~VXI_Server();
 
     int loop();
-    void begin(uint32_t port, bool debug);
+    void begin(uint32_t port, bool debug = false);
     int nr_connections(void);
     bool have_free_connections(void);
 

@@ -8,13 +8,15 @@
 
 // This is needed, and debugPort should point to Serial if you want to use the serial menu
 #define DEBUG_ENABLE
-// define USE_SERIALMENU if you want a basic menu on the serial console. Unfortunately, this library is hardcoded to use Serial.
+// define USE_SERIALMENU if you want a basic menu on the serial console for amongst others IP address setting.
 #define USE_SERIALMENU
 
 // define USE_WEBSERVER if you want to use a very basic web page server that serves a static explanation page.
-// It is not interactive, just a cherry on the cake.
-// This is meant to be used with the VXI server, but it might work with the Prologix server too.
+// It is not interactive, just a cherry on the cake with help text.
+// This is mainly meant to be used with the VXI server, but it should work with the Prologix server as long as ROM permits (it will be very close if not over the limit).
+#ifndef DISABLE_WEB_SERVER
 #define USE_WEBSERVER
+#endif
 
 #ifndef INTERFACE_PROLOGIX
 #define INTERFACE_VXI11
@@ -28,12 +30,18 @@
 
 // For the VXI server:
 #define VXI11_PORT 9010
-#define MAX_VXI_CLIENTS 30
+// Maximum number of clients for the VXI server:
+// Max MAX_SOCK_NUM sockets on the device. You will likely not even be able to reach that number, because of other sockets open or busy closing
+#define MAX_VXI_CLIENTS MAX_SOCK_NUM
 // set LOG_VXI_DETAILS to 0 or 1, depending on whether you want to see VXI details on the debugPort
 // setting to 1 messes up the serial menu a bit
-#define LOG_VXI_DETAILS 1
+#define LOG_VXI_DETAILS 0
 
-// if you acticate this, the serial menu will be messier. 
+// set LOG_WEB_DETAILS to 0 or 1, depending on whether you want to see Web server details on the debugPort
+// setting to 1 messes up the serial menu a bit
+#define LOG_WEB_DETAILS 0
+
+// if you activate this, the serial menu will be messier. 
 // Only activate this when you want to see memory usage 
 // and other details in auto refresh on the console.
 // #define LOG_STATS_ON_CONSOLE
