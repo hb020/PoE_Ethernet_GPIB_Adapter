@@ -59,8 +59,10 @@ This code can produce either a VXI-11.2 device, or a Prologix device (the ROM is
 
 VXI-11.2 allows discovery over the network, and uses the following VISA connection strings:
 
-- Controller[^1]: TCPIP::{IP address}::INSTR (unless you have set the default instrument address to something else than 0)
-- Instruments: TCPIP::{IP address}::gpib,*N*::INSTR or ...::inst*N*::INSTR, where *N* is their address on the GPIB bus (1..30)
+- Controller[^1]: `TCPIP::{IP address}::INSTR` (unless you have set the default instrument address to something else than 0)
+- Instruments: `TCPIP::{IP address}::gpib,N::INSTR` or `TCPIP::{IP address}::instN::INSTR`, where `N` is their address on the GPIB bus (1..30)
+
+Example: `TCPIP::192.168.7.105::gpib,2::INSTR` for instrument with GPIB address 2 on the gateway having IP address 192.168.7.105.
 
 [^1]: controller, gateway, adapter: different names for the same.
 
