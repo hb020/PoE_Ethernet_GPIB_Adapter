@@ -141,7 +141,7 @@ void loop_serial_menu(void) {
 #pragma region IP ADDRESS checking
 
 static IPAddress _previous_address(0, 0, 0, 0);
-static bool ip_address_is_wrong = false;
+static bool ethernet_has_problem = false;
 
 // forward declarations
 bool is_valid_IP_assigned(IPAddress current_address);
@@ -158,8 +158,7 @@ bool setup_ipaddress_surveillance_and_show_address(void) {
     debugPort.println(_previous_address);
     if (!is_valid_IP_assigned(_previous_address)) {
         debugPort.println(F("!! No valid IP address assigned. Please check your network settings."));
-        ip_address_is_wrong = true;
-        LEDRed();
+        ethernet_has_problem = true;
         return false;
     }
     return true;
@@ -167,9 +166,17 @@ bool setup_ipaddress_surveillance_and_show_address(void) {
 
 bool has_address_changed_since_start(void) {
     IPAddress current_address = Ethernet.localIP();
+    if (!is_valid_IP_assigned(_previous_address) && is_valid_IP_assigned(current_address)) {
+        // I now have a valid address
+        debugPort.print(F("IP Address: "));
+        debugPort.println(current_address);
+        _previous_address = current_address;
+        ethernet_has_problem = false;
+        return false;
+    }
     if (current_address != _previous_address) {
         // previous_address = current_address;        
-        ip_address_is_wrong = true;
+        ethernet_has_problem = true;
         return true;
     }
     return false;
@@ -264,7 +271,7 @@ void setup_led(void) {
 }
 
 void loop_led(bool has_clients) {
-    if (ip_address_is_wrong) {
+    if (ethernet_has_problem) {
         LEDRed();
     } else {
         if (has_clients) {
@@ -331,7 +338,7 @@ void setup_serial_ui_and_led(const __FlashStringHelper* helloStr) {
 // This function is called once at the end of setup.
 // It is to be called at the end of setup, after network initialization.
 void end_of_setup(void) {
-    if (ip_address_is_wrong) {
+    if (ethernet_has_problem) {
         LEDRed();
     } else {
         LEDGreen();
@@ -374,19 +381,24 @@ void loop_serial_ui_and_led(int nrConnections) {
 #endif
 
     if (onceASecond(false)) {
+        IPAddress current_address = Ethernet.localIP();
         // maintain DHCP
         Ethernet.maintain();
-        // Check if the IP address has changed
-        if (ip_address_is_wrong) {
+        if (Ethernet.linkStatus() != LinkON) {
+            ethernet_has_problem = true;
+            debugPort.println(F("Ethernet link is OFF"));
+        } else if (!is_valid_IP_assigned(current_address)) {  // Check if the IP address is valid
+            ethernet_has_problem = true;
             debugPort.print(F("IP Address "));
-            debugPort.print(Ethernet.localIP());
-            debugPort.println(F(" is wrong. Please reboot!"));
-            LEDRed();
+            debugPort.print(current_address);
+            debugPort.println(F(" is wrong. Please check DHCP!"));
         } else if (has_address_changed_since_start()) {
+            ethernet_has_problem = true;
             debugPort.print(F("!! IP Address changed: "));
-            debugPort.print(Ethernet.localIP());
-            debugPort.println(F("  Please reboot!"));
-            LEDRed();
+            debugPort.print(current_address);
+            debugPort.println(F(" Please inform your clients!"));
+        } else {
+            ethernet_has_problem = false;
         }
 
 #ifdef LOG_STATS_ON_CONSOLE
