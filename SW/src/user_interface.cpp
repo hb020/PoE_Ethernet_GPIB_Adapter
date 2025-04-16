@@ -166,7 +166,8 @@ bool setup_ipaddress_surveillance_and_show_address(void) {
 
 bool has_address_changed_since_start(IPAddress current_address) {
     if (!is_valid_IP_assigned(_previous_address) && is_valid_IP_assigned(current_address)) {
-        // I now have a valid address
+        // I now have a valid address, DHCP was probably late.
+        // This part of the code should never be reached more than once.
         debugPort.print(F("IP Address: "));
         debugPort.println(current_address);
         _previous_address = current_address;
@@ -174,7 +175,6 @@ bool has_address_changed_since_start(IPAddress current_address) {
         return false;
     }
     if (current_address != _previous_address) {
-        // previous_address = current_address;        
         ethernet_has_problem = true;
         return true;
     }
