@@ -164,8 +164,7 @@ bool setup_ipaddress_surveillance_and_show_address(void) {
     return true;
 }
 
-bool has_address_changed_since_start(void) {
-    IPAddress current_address = Ethernet.localIP();
+bool has_address_changed_since_start(IPAddress current_address) {
     if (!is_valid_IP_assigned(_previous_address) && is_valid_IP_assigned(current_address)) {
         // I now have a valid address
         debugPort.print(F("IP Address: "));
@@ -392,7 +391,7 @@ void loop_serial_ui_and_led(int nrConnections) {
             debugPort.print(F("IP Address "));
             debugPort.print(current_address);
             debugPort.println(F(" is wrong. Please check DHCP!"));
-        } else if (has_address_changed_since_start()) {
+        } else if (has_address_changed_since_start(current_address)) {
             ethernet_has_problem = true;
             debugPort.print(F("!! IP Address changed: "));
             debugPort.print(current_address);
